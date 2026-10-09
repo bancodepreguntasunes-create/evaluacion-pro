@@ -327,6 +327,15 @@
         </div>
       </div>
 
+      <!-- Calendario Interactivo -->
+      <div id="interactiveCalendarWrapper" style="margin-bottom: 24px; background: #ffffff; padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
+          <h3 style="font-size: 16px; color: var(--text-primary); margin:0;">Noviembre 2026 <span style="font-size:12px; font-weight:normal; color:var(--text-secondary); margin-left:8px;">(Haz clic en una fecha para ver el desglose)</span></h3>
+          <button class="btn-secondary" onclick="seleccionarFechaCalendario(null)" style="padding: 6px 12px; font-size:12px;">Mostrar Todo</button>
+        </div>
+        <div id="interactiveCalendar"></div>
+      </div>
+
       <!-- Filtros del calendario -->
       <div class="filter-bar">
         <div class="filter-group">

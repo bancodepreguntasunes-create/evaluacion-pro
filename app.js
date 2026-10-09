@@ -994,7 +994,65 @@ const SCHEDULE_DAYS = [
   }
 ];
 
+let selectedCalDate = null;
+
+function renderInteractiveCalendar() {
+  const container = document.getElementById('interactiveCalendar');
+  if (!container) return;
+  
+  const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  let html = `<div class="month-grid">`;
+  
+  // Headers
+  daysOfWeek.forEach(d => html += `<div class="month-header-day">${d}</div>`);
+  
+  // Nov 2026: Nov 1 es Domingo.
+  const startDay = 0; 
+  const totalDays = 30;
+  
+  for (let i = 0; i < startDay; i++) {
+    html += `<div class="month-day empty"></div>`;
+  }
+  
+  for (let i = 1; i <= totalDays; i++) {
+    const dateStr = `2026-11-${String(i).padStart(2, '0')}`;
+    const eventDay = SCHEDULE_DAYS.find(d => d.fecha === dateStr);
+    
+    let classes = 'month-day';
+    let indicator = '';
+    
+    if (eventDay) {
+      classes += ' has-event';
+      if (eventDay.isRezagados) classes += ' is-rezagados';
+      indicator = `<div class="month-day-indicator"></div>`;
+    }
+    
+    if (selectedCalDate === dateStr) {
+      classes += ' selected';
+    }
+    
+    html += `<div class="${classes}" ${eventDay ? `onclick="seleccionarFechaCalendario('${dateStr}')"` : ''}>
+               ${i}
+               ${indicator}
+             </div>`;
+  }
+  
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+function seleccionarFechaCalendario(fecha) {
+  if (selectedCalDate === fecha) {
+    selectedCalDate = null;
+  } else {
+    selectedCalDate = fecha;
+  }
+  renderInteractiveCalendar();
+  renderCalendario();
+}
+
 function renderCalendario() {
+  renderInteractiveCalendar();
   const container = document.getElementById('calGrid');
   if (!container) return;
 
@@ -1003,6 +1061,7 @@ function renderCalendario() {
   const fTrayecto = document.getElementById('calFiltroTrayecto')?.value || '';
 
   let filteredDays = SCHEDULE_DAYS.filter(d => {
+    if (selectedCalDate && d.fecha !== selectedCalDate) return false;
     if (fNucleo && !d.nucleos.includes(fNucleo)) return false;
     if (fPNF && !d.pnfs.includes(fPNF)) return false;
     if (fTrayecto && !d.trayectos.includes(fTrayecto)) return false;
@@ -1032,44 +1091,61 @@ function renderCalendario() {
     return `
       <div class="cal-card ${isRezagados ? 'is-rezagados' : ''}">
         <div class="cal-card-header">
-          <div class="cal-date-wrap">
-            <span class="cal-date-title">${escHTML(d.dia)}</span>
-            <span class="cal-day-label">${escHTML(d.label)}</span>
+          <div class="cal-date-block">
+            <span class="cal-month">NOV</span>
+            <span class="cal-day-num">${d.fecha.split('-')[2]}</span>
           </div>
-          <span class="cal-region-tag">${escHTML(d.region)}</span>
+          <div class="cal-header-info">
+            <span class="cal-day-label">${escHTML(d.label)}</span>
+            <h4 class="cal-date-title">${escHTML(d.dia)}</h4>
+            <span class="cal-region-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;margin-right:4px;vertical-align:middle"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${escHTML(d.region)}</span>
+          </div>
         </div>
         <div class="cal-card-body">
-          <div style="margin-bottom:6px">
-            <span class="badge ${isRezagados ? 'badge-reprobado' : 'badge-trayecto'}" style="font-size:12px;font-weight:700">
+          <div style="margin-bottom:12px">
+            <span class="badge ${isRezagados ? 'badge-reprobado' : 'badge-trayecto'}" style="font-size:13px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
               ${escHTML(d.convocatoria)}
             </span>
           </div>
 
           ${isRezagados ? `
-            <div style="background:rgba(128,0,32,0.1);border:1px solid rgba(128,0,32,0.3);border-radius:8px;padding:10px 12px;margin-bottom:6px">
-              <strong style="color:#800020;font-size:13px">🚨 JORNADA NACIONAL DE REZAGADOS Y REPROBADOS</strong>
-              <p style="font-size:12px;color:var(--text-secondary);margin-top:4px;line-height:1.4">
-                Atención especial para la evaluación extraordinaria de estudiantes rezagados y la recuperación de reprobados de <strong>todos los núcleos de la UNES (Todos los PNF)</strong>.
-              </p>
+            <div class="cal-alert rezagados-alert">
+              <span class="alert-icon">🚨</span>
+              <div class="alert-text">
+                <strong>JORNADA NACIONAL DE REZAGADOS Y REPROBADOS</strong>
+                <p>Atención especial para la evaluación extraordinaria de estudiantes rezagados y la recuperación de reprobados de <strong>todos los núcleos de la UNES (Todos los PNF)</strong>.</p>
+              </div>
             </div>
           ` : `
-            <div>
-              <div class="cal-sec-title">Núcleos Convocados</div>
+            <div class="cal-section">
+              <div class="cal-sec-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:4px;vertical-align:middle"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                Núcleos Convocados
+              </div>
               <div class="cal-nucleos-list">
                 ${d.nucleos.map(n => `<span class="cal-nucleo-chip">${escHTML(n)}</span>`).join('')}
               </div>
             </div>
           `}
 
-          <div>
-            <div class="cal-sec-title">Turnos y Programación (Todos los PNF)</div>
+          <div class="cal-section" style="margin-top:12px;">
+            <div class="cal-sec-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:4px;vertical-align:middle"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Turnos y Programación
+            </div>
             <div class="cal-turnos">
               ${d.turnos.map(t => `
                 <div class="cal-turno-item">
                   <div class="cal-turno-name">${escHTML(t.turno)}</div>
                   <div class="cal-turno-desc">
-                    <strong>Trayectos:</strong> ${escHTML(t.trayecto)}<br>
-                    <strong>Aplica a:</strong> <span style="color:#800020;font-weight:600">${escHTML(t.pnfs)}</span>
+                    <div class="cal-turno-row">
+                      <span class="cal-turno-label">Trayectos:</span>
+                      <span class="badge badge-trayecto" style="font-size:11px;padding:2px 6px">${escHTML(t.trayecto)}</span>
+                    </div>
+                    <div class="cal-turno-row">
+                      <span class="cal-turno-label">Aplica a:</span>
+                      <strong style="color:#800020">${escHTML(t.pnfs)}</strong>
+                    </div>
                   </div>
                 </div>
               `).join('')}
@@ -1077,8 +1153,11 @@ function renderCalendario() {
           </div>
         </div>
         <div class="cal-card-footer">
-          <span>Matrícula en sistema: <strong>${matchingEst.length} estudiantes</strong></span>
-          ${isRezagados && reprobadosCount > 0 ? `<span style="color:#dc2626;font-weight:700">⚠️ ${reprobadosCount} reprobados</span>` : ''}
+          <span style="display:flex;align-items:center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:6px;color:#64748b"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            Matrícula: <strong style="margin-left:4px">${matchingEst.length}</strong>
+          </span>
+          ${isRezagados && reprobadosCount > 0 ? `<span style="color:#dc2626;font-weight:700;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${reprobadosCount} reprobados</span>` : ''}
         </div>
       </div>
     `;
