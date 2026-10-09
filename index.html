@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- SheetJS para leer archivos Excel -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <title>EPA - Evaluación de Progreso Académico Reportes</title>
+  <meta name="description" content="EPA – Evaluación de Progreso Académico Reportes. Sistema de gestión académica de la UNES. Consulta el listado de núcleos por PNF, trayecto, aprobados y reprobados." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <img src="Captura de pantalla 2026-04-06 133203.png" alt="EPA Logo" class="sidebar-logo-img" />
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active" data-view="dashboard" id="nav-dashboard" href="#" onclick="showView('dashboard'); return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" data-view="nucleos" id="nav-nucleos" href="#" onclick="showView('nucleos'); return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>Núcleos</span>
+      </a>
+      <a class="nav-item" data-view="estudiantes" id="nav-estudiantes" href="#" onclick="showView('estudiantes'); return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        <span>Estudiantes</span>
+      </a>
+      <a class="nav-item" data-view="reportes" id="nav-reportes" href="#" onclick="showView('reportes'); return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+        <span>Reportes</span>
+      </a>
+      <a class="nav-item" data-view="importar" id="nav-importar" href="#" onclick="showView('importar'); return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span>Importar Excel</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="version-badge">UNES · EPA v1.0.0</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="main">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <button class="topbar-toggle" onclick="toggleSidebar()" id="sidebarToggle" title="Menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title" id="topbarTitle">Dashboard General</div>
+      <div class="topbar-actions">
+        <img src="descarga.png" alt="UNES Logo" class="topbar-unes-img" title="Universidad Nacional Experimental de la Seguridad" />
+        <button class="btn-icon" onclick="exportarCSV()" title="Exportar datos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- VIEWS -->
+
+    <!-- ===== DASHBOARD ===== -->
+    <section class="view active" id="view-dashboard">
+      <!-- Fila de stats compacta -->
+      <div class="stats-row" id="statsGrid"></div>
+
+      <!-- Gráficas en grid 3 columnas -->
+      <div class="dash-charts" id="dashCharts">
+        <div class="chart-card dash-chart-main">
+          <div class="chart-header">
+            <h3>Aprobados vs Reprobados por PNF</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartPNF"></canvas></div>
+        </div>
+        <div class="chart-card dash-chart-right">
+          <div class="chart-header">
+            <h3>Por Trayecto</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartTrayecto"></canvas></div>
+        </div>
+        <div class="chart-card dash-chart-bottom">
+          <div class="chart-header">
+            <h3>Top 10 Núcleos por Matrícula</h3>
+          </div>
+          <div class="chart-wrap"><canvas id="chartNucleos"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== NÚCLEOS ===== -->
+    <section class="view" id="view-nucleos">
+      <div class="view-header">
+        <h1>Núcleos EPA – UNES</h1>
+        <p class="view-subtitle">Listado de estudiantes por núcleo, PNF y trayecto</p>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>Núcleo</label>
+          <select id="filtroNucleo" onchange="filtrarTabla()">
+            <option value="">Todos los núcleos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>PNF</label>
+          <select id="filtroPNF" onchange="filtrarTabla()">
+            <option value="">Todos los PNF</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Trayecto</label>
+          <select id="filtroTrayecto" onchange="filtrarTabla()">
+            <option value="">Todos</option>
+            <option value="Inicial">Inicial</option>
+            <option value="I">I</option>
+            <option value="II">II</option>
+            <option value="III">III</option>
+            <option value="IV">IV</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Estatus</label>
+          <select id="filtroEstatus" onchange="filtrarTabla()">
+            <option value="">Todos</option>
+            <option value="Aprobado">Aprobado</option>
+            <option value="Reprobado">Reprobado</option>
+          </select>
+        </div>
+        <button class="btn-secondary" onclick="limpiarFiltros()">Limpiar</button>
+        <div class="filter-group">
+          <label>Token</label>
+          <input type="text" id="filtroToken" placeholder="Buscar token..." oninput="filtrarTabla()" style="min-width:130px" />
+        </div>
+        <button class="btn-danger-outline" onclick="confirmarBorrarTodo()" title="Borrar toda la base de datos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;display:inline;vertical-align:middle;margin-right:5px"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/><path d="M10,11v6M14,11v6"/><path d="M9,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v2"/></svg>
+          Borrar toda la data
+        </button>
+      </div>
+
+      <!-- Barra de acciones masivas (aparece cuando hay selección) -->
+      <div class="bulk-bar" id="bulkBar" style="display:none">
+        <div class="bulk-info">
+          <span id="bulkCount">0</span> estudiante(s) seleccionados
+        </div>
+        <div class="bulk-actions">
+          <button class="btn-secondary" onclick="deseleccionarTodo()">✕ Cancelar selección</button>
+          <button class="btn-danger" onclick="confirmarEliminarSeleccionados()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/></svg>
+            Eliminar seleccionados
+          </button>
+        </div>
+      </div>
+
+      <div class="table-stats" id="tableStats"></div>
+
+      <div class="table-wrapper">
+        <table class="data-table" id="tablaEstudiantes">
+          <thead>
+            <tr>
+              <th class="col-check">
+                <label class="custom-check">
+                  <input type="checkbox" id="checkAll" onchange="toggleSelectAll(this)" />
+                  <span class="checkmark"></span>
+                </label>
+              </th>
+              <th>Cédula</th>
+              <th>Nombre</th>
+              <th>Núcleo</th>
+              <th>PNF</th>
+              <th>Trayecto</th>
+              <th>Token</th>
+              <th>Estatus</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== ESTUDIANTES (REGISTRO) ===== -->
+    <section class="view" id="view-estudiantes">
+      <div class="view-header flex-row">
+        <div>
+          <h1>Registrar Estudiante</h1>
+          <p class="view-subtitle">Añadir o editar información de un estudiante</p>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <form id="formEstudiante" onsubmit="guardarEstudiante(event)">
+          <input type="hidden" id="editId" />
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="cedula">Cédula de Identidad *</label>
+              <input type="text" id="cedula" placeholder="Ej: V-12345678" required />
+            </div>
+            <div class="form-group">
+              <label for="nombre">Nombre Completo *</label>
+              <input type="text" id="nombre" placeholder="Apellido, Nombre" required />
+            </div>
+            <div class="form-group">
+              <label for="nucleo">Núcleo *</label>
+              <select id="nucleo" required>
+                <option value="">Seleccionar núcleo...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="pnf">PNF *</label>
+              <select id="pnf" required>
+                <option value="">Seleccionar PNF...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="trayecto">Trayecto *</label>
+              <select id="trayecto" required>
+                <option value="">Seleccionar trayecto...</option>
+                <option value="Inicial">Trayecto Inicial</option>
+                <option value="I">Trayecto I</option>
+                <option value="II">Trayecto II</option>
+                <option value="III">Trayecto III</option>
+                <option value="IV">Trayecto IV</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="token">Token de Evaluación</label>
+              <input type="text" id="token" placeholder="Ej: EPA-2024-001" />
+            </div>
+            <div class="form-group">
+              <label for="estatus">Estatus Académico *</label>
+              <select id="estatus" required>
+                <option value="">Seleccionar estatus...</option>
+                <option value="Aprobado">Aprobado</option>
+                <option value="Reprobado">Reprobado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="limpiarFormulario()">Cancelar</button>
+            <button type="submit" class="btn-primary" id="btnGuardar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+              Guardar Estudiante
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Mini tabla de registros recientes -->
+      <div class="recent-section">
+        <h3 class="section-title">Registros Recientes</h3>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr><th>Cédula</th><th>Nombre</th><th>Núcleo</th><th>PNF</th><th>Trayecto</th><th>Estatus</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="recentBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== REPORTES ===== -->
+    <section class="view" id="view-reportes">
+      <div class="view-header">
+        <h1>Reportes: Núcleo › PNF › Token</h1>
+        <p class="view-subtitle">Resultados de evaluación agrupados por núcleo, programa y token de prueba</p>
+      </div>
+
+      <div class="report-filters">
+        <div class="filter-group">
+          <label>Filtrar por Núcleo</label>
+          <select id="reporteNucleo" onchange="generarReporte()">
+            <option value="">Todos los núcleos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Filtrar por PNF</label>
+          <select id="reportePNF" onchange="generarReporte()">
+            <option value="">Todos los PNF</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Buscar Token</label>
+          <input type="text" id="reporteToken" placeholder="Ej: EPA-2024" oninput="generarReporte()" style="min-width:150px" />
+        </div>
+      </div>
+
+      <div id="reporteContainer"></div>
+    </section>
+
+    <!-- ===== IMPORTAR EXCEL ===== -->
+    <section class="view" id="view-importar">
+      <div class="view-header">
+        <h1>Importar desde Excel</h1>
+        <p class="view-subtitle">Carga tu archivo .xlsx o .xls con los datos reales de los estudiantes</p>
+      </div>
+
+      <!-- Zona de carga -->
+      <div class="import-dropzone" id="dropzone"
+           ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)"
+           onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFileSelect(event)" />
+        <div class="dropzone-icon">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="48" height="48" rx="8" fill="rgba(99,102,241,0.1)" stroke="rgba(99,102,241,0.4)" stroke-width="2" stroke-dasharray="6 4"/>
+            <path d="M32 40V24M32 24L26 30M32 24L38 30" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="20" y="44" width="24" height="4" rx="2" fill="rgba(99,102,241,0.2)"/>
+          </svg>
+        </div>
+        <div class="dropzone-text">
+          <strong>Arrastra tu archivo Excel aquí</strong>
+          <span>o haz clic para seleccionarlo &nbsp;·&nbsp; .xlsx &nbsp;·&nbsp; .xls &nbsp;·&nbsp; .csv</span>
+        </div>
+      </div>
+
+      <!-- Panel de mapeo de columnas (aparece tras cargar el archivo) -->
+      <div class="import-config" id="importConfig" style="display:none">
+        <div class="import-config-header">
+          <div class="import-file-info" id="importFileInfo"></div>
+          <button class="btn-secondary" onclick="resetImport()">✕ Cambiar archivo</button>
+        </div>
+
+        <h3 class="section-title" style="margin-bottom:16px">Mapear columnas del Excel</h3>
+        <p style="font-size:13px;color:#94a3b8;margin-bottom:20px">
+          Indica qué columna de tu Excel corresponde a cada campo del sistema.<br>
+          <span style="color:#6366f1">El sistema intenta detectarlas automáticamente.</span>
+        </p>
+
+        <div class="col-mapper" id="colMapper"></div>
+
+        <!-- Vista previa de primeras filas -->
+        <div id="previewSection" style="margin-top:24px"></div>
+
+        <div class="import-actions">
+          <button class="btn-secondary" onclick="resetImport()">Cancelar</button>
+          <button class="btn-primary" onclick="ejecutarImportacion()" id="btnImportar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Importar datos al sistema
+          </button>
+        </div>
+      </div>
+
+      <!-- Guía de formato -->
+      <div class="format-guide">
+        <h3 class="section-title">📋 Formato esperado del Excel</h3>
+        <p style="font-size:13px;color:#94a3b8;margin-bottom:16px">
+          Tu archivo debe tener una fila de encabezados. Los nombres de columna pueden variar — los mapearás tú mismo arriba. Campos requeridos:
+        </p>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>Campo</th><th>Descripción</th><th>Valores aceptados</th></tr></thead>
+            <tbody>
+              <tr><td>Cédula</td><td>Número de identidad del estudiante</td><td>Ej: V-12345678</td></tr>
+              <tr><td>Nombre</td><td>Apellido y nombre completo</td><td>Ej: PÉREZ, CARLOS</td></tr>
+              <tr><td>Núcleo</td><td>Sede / núcleo UNES</td><td>Ej: CARACAS, ARAGUA, ZULIA...</td></tr>
+              <tr><td>PNF</td><td>Programa Nacional de Formación</td><td>Nombre completo o abreviado del PNF</td></tr>
+              <tr><td>Trayecto</td><td>Nivel académico cursado</td><td>Inicial · I · II · III · IV</td></tr>
+              <tr><td>Estatus</td><td>Resultado académico</td><td>Aprobado · Reprobado</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="format-tip">
+          <span>💡</span>
+          <span>Si tu Excel tiene columnas con nombres diferentes (ej: "NUCLEO", "SEDE", "STATUS"), no hay problema — el mapeador te permitirá asignarlas manualmente.</span>
+        </div>
+        <div class="format-tip" style="margin-top:8px;border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.06)">
+          <span>⚠️</span>
+          <span><strong style="color:#f1f5f9">Importante:</strong> Al importar, puedes elegir si <em>reemplazar</em> todos los datos existentes o <em>agregar</em> los nuevos al final.</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay" onclick="cerrarModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="modalTitle">Confirmar acción</h3>
+        <button class="modal-close" onclick="cerrarModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn-danger" id="modalConfirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
