@@ -767,8 +767,8 @@ function escHTML(str){return String(str??'').replace(/&/g,'&amp;').replace(/</g,
 
 const ALL_PNFS_IDS = PNF_LIST.map(p => p.id);
 
-// 40 Núcleos distribuidos en 6 grupos de evaluación
-const G1 = ["CARACAS", "HELICOIDE", "JUNQUITO", "SENAMECF", "SAN PEDRO - COMUNAL", "EL LLANITO", "CAFETAL"];
+// 39 Núcleos distribuidos en 6 grupos de evaluación
+const G1 = ["CARACAS", "HELICOIDE", "JUNQUITO", "SAN PEDRO - COMUNAL", "EL LLANITO", "CAFETAL"];
 const G2 = ["LA GUAIRA", "CEFE CARMEN DE URIA", "EJE METROPOLITANO", "EJE ALTOS MIRANDINOS", "EJE VALLES DEL TUY", "EJE BARLOVENTO", "EJE GUARENAS - GUATIRE"];
 const G3 = ["ARAGUA", "CARABOBO", "YARACUY", "FALCÓN", "LARA", "COJEDES", "COJEDES TINAQUILLO"];
 const G4 = ["ZULIA", "EJE LA GUAJIRA", "EJE SUR DEL LAGO", "APURE", "BARINAS", "GUÁRICO", "PORTUGUESA"];
