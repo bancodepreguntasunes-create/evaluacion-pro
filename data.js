@@ -24,6 +24,7 @@ const NUCLEOS = [
   "LARA",
   "EJE LA GUAJIRA",
   "ZULIA",
+  "EJE SUR DEL LAGO",
   "APURE",
   "BARINAS",
   "COJEDES TINAQUILLO",

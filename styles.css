@@ -1150,4 +1150,211 @@ select option { background: var(--bg-surface); color: var(--text-primary); }
   text-align: right;
 }
 
+/* ===================== CALENDARIO ===================== */
+
+.cal-banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.cal-banner-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.cal-banner-item.alert-rezagados {
+  background: linear-gradient(135deg, rgba(128,0,32,0.08), rgba(220,38,38,0.06));
+  border: 1px solid rgba(128,0,32,0.3);
+}
+
+.cal-badge-regular {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(71,85,105,0.12);
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.cal-badge-rezagados {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #800020;
+  color: #ffffff;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.cal-banner-item p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 20px;
+}
+
+.cal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+
+.cal-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-md);
+}
+
+.cal-card.is-rezagados {
+  border: 2px solid #800020;
+  box-shadow: 0 4px 20px rgba(128,0,32,0.18);
+}
+
+.cal-card-header {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cal-card.is-rezagados .cal-card-header {
+  background: linear-gradient(135deg, #800020, #9e1b42);
+  color: #ffffff;
+}
+
+.cal-date-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.cal-date-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cal-card.is-rezagados .cal-date-title {
+  color: #ffffff;
+}
+
+.cal-day-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cal-card.is-rezagados .cal-day-label {
+  color: rgba(255,255,255,0.8);
+}
+
+.cal-region-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #800020;
+  border: 1px solid var(--border);
+}
+
+.cal-card-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.cal-sec-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.cal-nucleos-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cal-nucleo-chip {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: var(--text-primary);
+}
+
+.cal-card.is-rezagados .cal-nucleo-chip {
+  background: rgba(128,0,32,0.08);
+  border-color: rgba(128,0,32,0.3);
+  color: #800020;
+  font-weight: 700;
+}
+
+.cal-turnos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cal-turno-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+}
+
+.cal-turno-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #800020;
+  margin-bottom: 2px;
+}
+
+.cal-turno-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.cal-card-footer {
+  padding: 10px 18px;
+  background: #f8fafc;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
 

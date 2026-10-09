@@ -36,6 +36,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
         <span>Reportes</span>
       </a>
+      <a class="nav-item" data-view="calendario" id="nav-calendario" href="#" onclick="showView('calendario'); return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Calendario</span>
+      </a>
       <a class="nav-item" data-view="importar" id="nav-importar" href="#" onclick="showView('importar'); return false;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         <span>Importar Excel</span>
@@ -295,6 +299,64 @@
       </div>
 
       <div id="reporteContainer"></div>
+    </section>
+
+    <!-- ===== CALENDARIO ===== -->
+    <section class="view" id="view-calendario">
+      <div class="view-header flex-row">
+        <div>
+          <h1>Cronograma de Evaluaciones EPA</h1>
+          <p class="view-subtitle">Distribución oficial del 04 al 18 de Noviembre (Exclusivamente Lunes a Viernes)</p>
+        </div>
+        <button class="btn-primary" onclick="window.print()">🖨️ Imprimir Cronograma</button>
+      </div>
+
+      <!-- Banner de alerta de fechas -->
+      <div class="cal-banner" style="grid-template-columns: 1fr 1fr">
+        <div class="cal-banner-item">
+          <span class="cal-badge-regular">📌 1ª Convocatoria · Mié 04 al Mié 11 Nov</span>
+          <p><strong>Trayecto Inicial, I y II</strong> · Aplica a <strong>Todos los PNF</strong> (40 Núcleos distribuidos)</p>
+        </div>
+        <div class="cal-banner-item">
+          <span class="cal-badge-regular" style="background:rgba(128,0,32,0.12);color:#800020">📌 2ª Convocatoria · Jue 12 al Mar 17 Nov</span>
+          <p><strong>Trayecto III y IV</strong> · Aplica a <strong>Todos los PNF</strong> (40 Núcleos distribuidos)</p>
+        </div>
+        <div class="cal-banner-item alert-rezagados" style="grid-column: 1 / -1">
+          <span class="cal-badge-rezagados">🚨 JORNADA ESPECIAL FINAL · Miércoles 18 de Noviembre</span>
+          <p><strong>Rezagados y Reprobados de TODOS LOS 40 NÚCLEOS</strong> · Atención a todos los PNF y Trayectos (Evaluación Extraordinaria y Recuperación).</p>
+        </div>
+      </div>
+
+      <!-- Filtros del calendario -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>Filtrar por Núcleo</label>
+          <select id="calFiltroNucleo" onchange="renderCalendario()">
+            <option value="">Todos los núcleos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Filtrar por PNF</label>
+          <select id="calFiltroPNF" onchange="renderCalendario()">
+            <option value="">Todos los PNF</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Filtrar por Trayecto</label>
+          <select id="calFiltroTrayecto" onchange="renderCalendario()">
+            <option value="">Todos los trayectos</option>
+            <option value="Inicial">Trayecto Inicial</option>
+            <option value="I">Trayecto I</option>
+            <option value="II">Trayecto II</option>
+            <option value="III">Trayecto III</option>
+            <option value="IV">Trayecto IV</option>
+          </select>
+        </div>
+        <button class="btn-secondary" onclick="limpiarFiltrosCalendario()">Limpiar Filtros</button>
+      </div>
+
+      <!-- Grid de Días del Calendario -->
+      <div class="cal-grid" id="calGrid"></div>
     </section>
 
     <!-- ===== IMPORTAR EXCEL ===== -->
