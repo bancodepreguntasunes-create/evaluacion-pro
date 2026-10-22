@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTabla();
   renderRecientes();
   generarReporte();
+  renderCalendario();
 });
 
 // ──────────────────────────────────────────
@@ -106,7 +107,9 @@ function showView(viewId) {
     calendario: 'Cronograma de Evaluaciones – EPA',
     importar:   'Importar desde Excel'
   };
-  document.getElementById('topbarTitle').textContent = titles[viewId] || viewId;
+  const titleEl = document.getElementById('topbarTitle');
+  if (titleEl) titleEl.textContent = titles[viewId] || viewId;
+  
   if (viewId === 'dashboard')   renderDashboard();
   if (viewId === 'nucleos')     filtrarTabla();
   if (viewId === 'estudiantes') renderRecientes();
@@ -115,8 +118,8 @@ function showView(viewId) {
 }
 
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('collapsed');
-  document.getElementById('main').classList.toggle('sidebar-collapsed');
+  document.getElementById('sidebar')?.classList.toggle('collapsed');
+  document.getElementById('main')?.classList.toggle('sidebar-collapsed');
 }
 
 // ──────────────────────────────────────────
@@ -179,7 +182,6 @@ const iconX    = () => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 const iconBar  = () => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>`;
 const iconMap  = () => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
 const iconKey  = () => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>`;
-const iconBook = () => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>`;
 
 // ──────────────────────────────────────────
 //  GRÁFICAS
@@ -355,7 +357,7 @@ function guardarEstudiante(e) {
     DB.estudiantes.push({ id:String(DB.nextId++), cedula, nombre, nucleo, pnf, trayecto, token, estatus });
     toast('Estudiante registrado.', 'success');
   }
-  guardarDB(); limpiarFormulario(); renderRecientes();
+  guardarDB(); limpiarFormulario(); renderRecientes(); renderDashboard();
 }
 
 function limpiarFormulario() {
@@ -437,8 +439,8 @@ function mostrarMapeo(fileName, rowCount) {
   document.getElementById('dropzone').style.display = 'none';
   document.getElementById('importConfig').style.display = 'block';
   document.getElementById('importFileInfo').innerHTML = `
-    <span style="font-size:14px;font-weight:600;color:#f1f5f9">📄 ${escHTML(fileName)}</span>
-    <span style="font-size:13px;color:#94a3b8;margin-left:12px">${rowCount} filas · ${excelHeaders.length} columnas</span>`;
+    <span style="font-size:14px;font-weight:600;color:#1e293b">📄 ${escHTML(fileName)}</span>
+    <span style="font-size:13px;color:#64748b;margin-left:12px">${rowCount} filas · ${excelHeaders.length} columnas</span>`;
 
   const mapper = document.getElementById('colMapper');
   mapper.innerHTML = CAMPOS_SISTEMA.map(campo => {
@@ -449,14 +451,14 @@ function mostrarMapeo(fileName, rowCount) {
       <div class="mapper-row">
         <div class="mapper-field">
           <span class="mapper-label">${campo.label}</span>
-          <span class="mapper-required" style="${isOptional?'color:#f59e0b':''}">${isOptional?'opcional':'requerido'}</span>
+          <span class="mapper-required" style="${isOptional?'color:#d97706':''}">${isOptional?'opcional':'requerido'}</span>
         </div>
         <div class="mapper-arrow">→</div>
         <select class="mapper-select" id="map_${campo.key}">
           <option value="">-- ${isOptional?'Omitir':'No mapear'} --</option>
           ${opts}
         </select>
-        ${auto ? `<span class="mapper-auto">✓ auto</span>` : `<span class="mapper-manual">seleccionar</span>`}
+        ${auto ? `<span class="mapper-auto" style="color:#059669;font-size:11px;font-weight:600">✓ auto</span>` : `<span class="mapper-manual" style="color:#64748b;font-size:11px">seleccionar</span>`}
       </div>`;
   }).join('');
 
@@ -687,7 +689,7 @@ function generarReporte() {
           </div>
         </div>
         <div class="rpt-nucleo-body">
-          ${pnfBlocks || '<p style="color:#475569;font-size:13px;padding:16px">Sin PNF registrados.</p>'}
+          ${pnfBlocks || '<p style="color:#64748b;font-size:13px;padding:16px">Sin PNF registrados.</p>'}
         </div>
       </div>`;
   }).join('');
@@ -701,14 +703,14 @@ function confirmarEliminar(id) {
   deleteTargetId=id;
   document.getElementById('modalTitle').textContent='Eliminar estudiante';
   document.getElementById('modalBody').innerHTML=`
-    ¿Seguro que deseas eliminar a <strong style="color:#f1f5f9">${escHTML(e.nombre)}</strong>?
+    ¿Seguro que deseas eliminar a <strong style="color:#1e293b">${escHTML(e.nombre)}</strong>?
     <br><br><small style="color:#f43f5e">Esta acción no se puede deshacer.</small>`;
   document.getElementById('modalConfirm').onclick=ejecutarEliminar;
   document.getElementById('modalOverlay').classList.add('open');
 }
 function ejecutarEliminar() {
   DB.estudiantes=DB.estudiantes.filter(s=>s.id!==deleteTargetId);
-  guardarDB(); cerrarModal(); filtrarTabla(); renderRecientes();
+  guardarDB(); cerrarModal(); filtrarTabla(); renderRecientes(); renderDashboard();
   toast('Estudiante eliminado.','info'); deleteTargetId=null;
 }
 function cerrarModal() { document.getElementById('modalOverlay')?.classList.remove('open'); }
@@ -749,7 +751,7 @@ function confirmarEliminarSeleccionados() {
 }
 function ejecutarEliminarSeleccionados(ids) {
   const set=new Set(ids); DB.estudiantes=DB.estudiantes.filter(s=>!set.has(s.id));
-  guardarDB(); cerrarModal(); deseleccionarTodo(); filtrarTabla(); renderRecientes();
+  guardarDB(); cerrarModal(); deseleccionarTodo(); filtrarTabla(); renderRecientes(); renderDashboard();
   toast(`${ids.length} estudiante(s) eliminados.`,'info');
 }
 function confirmarBorrarTodo() {
@@ -757,7 +759,7 @@ function confirmarBorrarTodo() {
   document.getElementById('modalTitle').textContent='⚠️ Borrar toda la base de datos';
   document.getElementById('modalBody').innerHTML=`
     ¿Estás <strong style="color:#fb7185">TOTALMENTE SEGURO</strong>?<br><br>
-    Se eliminarán <strong style="color:#f1f5f9">${DB.estudiantes.length} registros</strong> de EPA.<br><br>
+    Se eliminarán <strong style="color:#1e293b">${DB.estudiantes.length} registros</strong> de EPA.<br><br>
     <small style="color:#f43f5e">⚠️ Irreversible. Los datos no se recuperan.</small>`;
   document.getElementById('modalConfirm').onclick=ejecutarBorrarTodo;
   document.getElementById('modalOverlay').classList.add('open');
@@ -936,9 +938,9 @@ function renderInteractiveCalendar() {
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
 
   let html = `
-    <div class="cal-month-nav">
-      <span class="cal-month-title">${monthNames[viewMonth]} ${viewYear}</span>
-      ${selectedCalDate ? `<button class="cal-clear-btn" onclick="limpiarSeleccionCalendario()">✕ Quitar filtro</button>` : ``}
+    <div class="cal-month-nav" style="display:flex; justify-content:space-between; margin-bottom:12px; align-items:center;">
+      <span class="cal-month-title" style="font-weight:700; color:#1e293b; font-size:15px;">${monthNames[viewMonth]} ${viewYear}</span>
+      ${selectedCalDate ? `<button class="btn-secondary" onclick="limpiarSeleccionCalendario()" style="padding:4px 10px; font-size:11px;">✕ Quitar selección</button>` : ``}
     </div>
     <div class="month-grid">`;
 
@@ -965,10 +967,12 @@ function renderInteractiveCalendar() {
 }
 
 function seleccionarFechaCalendario(fecha) {
+  if (!fecha && fecha !== null) return;
   selectedCalDate = (selectedCalDate === fecha) ? null : fecha;
   renderInteractiveCalendar();
   renderCalendario();
 }
+
 function limpiarSeleccionCalendario() {
   selectedCalDate = null;
   renderInteractiveCalendar();
