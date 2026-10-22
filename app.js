@@ -825,23 +825,10 @@ const SCHEDULE_DAYS = [
       { turno:"Turno Mañana (08:00 AM - 12:00 PM)", trayecto:"Trayecto Inicial y Trayecto I", pnfs:"Todos los PNF de la UNES" },
       { turno:"Turno Tarde (01:00 PM - 05:00 PM)", trayecto:"Trayecto II", pnfs:"Todos los PNF de la UNES" }
     ]},
+  // VIERNES 06: Absorbe el Grupo 3, y también el Grupo 4 y 5 (que estaban el sábado 07 y domingo 08)
   { fecha:"2026-11-06", dia:"Viernes 06 de Noviembre", label:"1ª Convocatoria · Día 03",
-    convocatoria:"1ª Convocatoria (Trayecto Inicial, I y II)", region:"Región Central & Cojedes (Grupo 3)",
-    nucleos:G3, pnfs:ALL_PNFS_IDS, trayectos:["Inicial","I","II"],
-    turnos:[
-      { turno:"Turno Mañana (08:00 AM - 12:00 PM)", trayecto:"Trayecto Inicial y Trayecto I", pnfs:"Todos los PNF de la UNES" },
-      { turno:"Turno Tarde (01:00 PM - 05:00 PM)", trayecto:"Trayecto II", pnfs:"Todos los PNF de la UNES" }
-    ]},
-  { fecha:"2026-11-07", dia:"Sábado 07 de Noviembre", label:"1ª Convocatoria · Día 04",
-    convocatoria:"1ª Convocatoria (Trayecto Inicial, I y II)", region:"Zulia & Región Los Llanos (Grupo 4)",
-    nucleos:G4, pnfs:ALL_PNFS_IDS, trayectos:["Inicial","I","II"],
-    turnos:[
-      { turno:"Turno Mañana (08:00 AM - 12:00 PM)", trayecto:"Trayecto Inicial y Trayecto I", pnfs:"Todos los PNF de la UNES" },
-      { turno:"Turno Tarde (01:00 PM - 05:00 PM)", trayecto:"Trayecto II", pnfs:"Todos los PNF de la UNES" }
-    ]},
-  { fecha:"2026-11-08", dia:"Domingo 08 de Noviembre", label:"1ª Convocatoria · Día 05",
-    convocatoria:"1ª Convocatoria (Trayecto Inicial, I y II)", region:"Región Los Andes & Oriente (Grupo 5)",
-    nucleos:G5, pnfs:ALL_PNFS_IDS, trayectos:["Inicial","I","II"],
+    convocatoria:"1ª Convocatoria (Trayecto Inicial, I y II)", region:"Región Central, Zulia, Llanos, Andes y Oriente",
+    nucleos:G3.concat(G4, G5), pnfs:ALL_PNFS_IDS, trayectos:["Inicial","I","II"],
     turnos:[
       { turno:"Turno Mañana (08:00 AM - 12:00 PM)", trayecto:"Trayecto Inicial y Trayecto I", pnfs:"Todos los PNF de la UNES" },
       { turno:"Turno Tarde (01:00 PM - 05:00 PM)", trayecto:"Trayecto II", pnfs:"Todos los PNF de la UNES" }
@@ -876,23 +863,10 @@ const SCHEDULE_DAYS = [
       { turno:"Turno Mañana (08:00 AM - 12:00 PM)", trayecto:"Trayecto III", pnfs:"Todos los PNF de la UNES" },
       { turno:"Turno Tarde (01:00 PM - 05:00 PM)", trayecto:"Trayecto IV", pnfs:"Todos los PNF de la UNES" }
     ]},
+  // VIERNES 13: Absorbe el Grupo 3, y también el Grupo 4 y 5 (que estaban el sábado 14 y domingo 15)
   { fecha:"2026-11-13", dia:"Viernes 13 de Noviembre", label:"2ª Convocatoria · Día 10",
-    convocatoria:"2ª Convocatoria (Trayecto III y IV)", region:"La Guaira & Ejes Subregionales (Grupo 2)",
-    nucleos:G2, pnfs:ALL_PNFS_IDS, trayectos:["III","IV"],
-    turnos:[
-      { turno:"Turno Mañana (08:00 AM - 12:00 PM)", trayecto:"Trayecto III", pnfs:"Todos los PNF de la UNES" },
-      { turno:"Turno Tarde (01:00 PM - 05:00 PM)", trayecto:"Trayecto IV", pnfs:"Todos los PNF de la UNES" }
-    ]},
-  { fecha:"2026-11-14", dia:"Sábado 14 de Noviembre", label:"2ª Convocatoria · Día 11",
-    convocatoria:"2ª Convocatoria (Trayecto III y IV)", region:"Región Central & Cojedes (Grupo 3)",
-    nucleos:G3, pnfs:ALL_PNFS_IDS, trayectos:["III","IV"],
-    turnos:[
-      { turno:"Turno Mañana (08:00 AM - 12:00 PM)", trayecto:"Trayecto III", pnfs:"Todos los PNF de la UNES" },
-      { turno:"Turno Tarde (01:00 PM - 05:00 PM)", trayecto:"Trayecto IV", pnfs:"Todos los PNF de la UNES" }
-    ]},
-  { fecha:"2026-11-15", dia:"Domingo 15 de Noviembre", label:"2ª Convocatoria · Día 12",
-    convocatoria:"2ª Convocatoria (Trayecto III y IV)", region:"Zulia & Región Los Llanos (Grupo 4)",
-    nucleos:G4, pnfs:ALL_PNFS_IDS, trayectos:["III","IV"],
+    convocatoria:"2ª Convocatoria (Trayecto III y IV)", region:"La Guaira, Central, Cojedes, Zulia, Llanos, Andes y Oriente",
+    nucleos:G2.concat(G3, G4, G5), pnfs:ALL_PNFS_IDS, trayectos:["III","IV"],
     turnos:[
       { turno:"Turno Mañana (08:00 AM - 12:00 PM)", trayecto:"Trayecto III", pnfs:"Todos los PNF de la UNES" },
       { turno:"Turno Tarde (01:00 PM - 05:00 PM)", trayecto:"Trayecto IV", pnfs:"Todos los PNF de la UNES" }
@@ -949,6 +923,15 @@ function renderInteractiveCalendar() {
 
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = `${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dateObj = new Date(viewYear, viewMonth, day);
+    const dayOfWeek = dateObj.getDay(); // 0 = Domingo, 6 = Sábado
+    
+    // Ocultar Sábados y Domingos (los mostramos como vacíos)
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      html += `<div class="month-day empty"></div>`;
+      continue;
+    }
+
     const eventDay = SCHEDULE_DAYS.find(d => d.fecha === dateStr);
     let classes = 'month-day';
     let indicator = '';
