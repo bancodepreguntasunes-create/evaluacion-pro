@@ -821,7 +821,7 @@ const SCHEDULE_DAYS = [
   },
   {
     fecha: "2026-11-07",
-    dia: "Sábado 07 de Noviembre",
+    dia: "Viernes 06 de Noviembre",
     label: "1ª Convocatoria · Día 04",
     convocatoria: "1ª Convocatoria (Trayecto Inicial, I y II)",
     region: "Zulia & Región Los Llanos (Grupo 4)",
@@ -835,7 +835,7 @@ const SCHEDULE_DAYS = [
   },
   {
     fecha: "2026-11-08",
-    dia: "Domingo 08 de Noviembre",
+    dia: "Viernes 06 de Noviembre",
     label: "1ª Convocatoria · Día 05",
     convocatoria: "1ª Convocatoria (Trayecto Inicial, I y II)",
     region: "Región Los Andes & Oriente (Grupo 5)",
@@ -921,7 +921,7 @@ const SCHEDULE_DAYS = [
   },
   {
     fecha: "2026-11-14",
-    dia: "Sábado 14 de Noviembre",
+    dia: "Viernes 13 de Noviembre",
     label: "2ª Convocatoria · Día 11",
     convocatoria: "2ª Convocatoria (Trayecto III y IV)",
     region: "Región Central & Cojedes (Grupo 3)",
@@ -935,7 +935,7 @@ const SCHEDULE_DAYS = [
   },
   {
     fecha: "2026-11-15",
-    dia: "Domingo 15 de Noviembre",
+    dia: "Viernes 13 de Noviembre",
     label: "2ª Convocatoria · Día 12",
     convocatoria: "2ª Convocatoria (Trayecto III y IV)",
     region: "Zulia & Región Los Llanos (Grupo 4)",
