@@ -999,54 +999,64 @@ let selectedCalDate = null;
 function renderInteractiveCalendar() {
   const container = document.getElementById('interactiveCalendar');
   if (!container) return;
-  
+
   const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-  let html = `<div class="month-grid">`;
-  
-  // Headers
+  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                      'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  // Mes/año a mostrar (noviembre 2026 por defecto)
+  const viewYear  = 2026;
+  const viewMonth = 10; // 0-index → 10 = Noviembre
+
+  const firstDay    = new Date(viewYear, viewMonth, 1).getDay(); // 0=Dom
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+  let html = `
+    <div class="cal-month-nav">
+      <button class="cal-nav-btn" disabled title="Mes anterior">‹</button>
+      <span class="cal-month-title">${monthNames[viewMonth]} ${viewYear}</span>
+      <button class="cal-nav-btn" disabled title="Mes siguiente">›</button>
+    </div>
+    <div class="month-grid">`;
+
+  // Cabecera de días
   daysOfWeek.forEach(d => html += `<div class="month-header-day">${d}</div>`);
-  
-  // Nov 2026: Nov 1 es Domingo.
-  const startDay = 0; 
-  const totalDays = 30;
-  
-  for (let i = 0; i < startDay; i++) {
+
+  // Huecos antes del día 1
+  for (let i = 0; i < firstDay; i++) {
     html += `<div class="month-day empty"></div>`;
   }
-  
-  for (let i = 1; i <= totalDays; i++) {
-    const dateStr = `2026-11-${String(i).padStart(2, '0')}`;
+
+  // Días del mes
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const eventDay = SCHEDULE_DAYS.find(d => d.fecha === dateStr);
-    
+
     let classes = 'month-day';
     let indicator = '';
-    
+
     if (eventDay) {
       classes += ' has-event';
       if (eventDay.isRezagados) classes += ' is-rezagados';
       indicator = `<div class="month-day-indicator"></div>`;
     }
-    
-    if (selectedCalDate === dateStr) {
-      classes += ' selected';
-    }
-    
-    html += `<div class="${classes}" ${eventDay ? `onclick="seleccionarFechaCalendario('${dateStr}')"` : ''}>
-               ${i}
+
+    if (selectedCalDate === dateStr) classes += ' selected';
+
+    const clickable = eventDay ? `onclick="seleccionarFechaCalendario('${dateStr}')"` : '';
+    const titleAttr = eventDay ? `title="${escHTML(eventDay.label)} · ${escHTML(eventDay.region)}"` : '';
+
+    html += `<div class="${classes}" ${clickable} ${titleAttr}>
+               ${day}
                ${indicator}
              </div>`;
   }
-  
+
   html += `</div>`;
   container.innerHTML = html;
 }
-
 function seleccionarFechaCalendario(fecha) {
-  if (selectedCalDate === fecha) {
-    selectedCalDate = null;
-  } else {
-    selectedCalDate = fecha;
-  }
+  selectedCalDate = (selectedCalDate === fecha) ? null : fecha;
   renderInteractiveCalendar();
   renderCalendario();
 }
