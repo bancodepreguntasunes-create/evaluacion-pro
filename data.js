@@ -46,6 +46,13 @@ const NUCLEOS = [
 
 const PNF_LIST = [
   {
+    id: "ciencias-policiales",
+    nombre: "PNF en Ciencias Policiales",
+    corto: "Ciencias Policiales",
+    descripcion: "Formación técnica y operativa en Ciencias Policiales y seguridad ciudadana.",
+    color: "#3b82f6"
+  },
+  {
     id: "servicio-policial",
     nombre: "PNF en Servicio Policial",
     corto: "Serv. Policial",
