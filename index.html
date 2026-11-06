@@ -34,7 +34,7 @@
         if (_db && _db.estudiantes) {
           var _ap = _db.estudiantes.filter(function(e) { return e.estatus === 'Aprobado'; }).length;
           var _rep = _db.estudiantes.filter(function(e) { return e.estatus === 'Reprobado'; }).length;
-          if (_rep > _ap || !_db.version || _db.version < 5) {
+          if (_rep > _ap || !_db.version || _db.version < 6) {
             console.warn('Purgando localStorage corrupto...');
             localStorage.removeItem('unesDB');
             localStorage.removeItem('unes_estudiantes');
@@ -909,6 +909,27 @@
         </p>
 
 
+
+        
+        <!-- Opciones de Carga Diaria / Acumulativa -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
+          <h4 style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:#6366f1"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            Modo de Carga de Archivos:
+          </h4>
+          <div style="display:flex;gap:20px;font-size:13px;color:#334155;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+              <input type="radio" name="modoCarga" id="modoCargaAcumular" value="acumular" checked style="accent-color:#6366f1;">
+              <strong>Carga Diaria / Acumulativa (Recomendado)</strong> <span style="color:#64748b;">— Agrega los nuevos registros y actualiza los existentes sin borrar los días anteriores.</span>
+            </label>
+          </div>
+          <div style="margin-top:8px;font-size:13px;color:#334155;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+              <input type="radio" name="modoCarga" id="modoCargaReemplazar" value="reemplazar" style="accent-color:#6366f1;">
+              <span>Reemplazar todo</span> <span style="color:#64748b;">— Limpia la base de datos y deja solo este archivo.</span>
+            </label>
+          </div>
+        </div>
 
         <div class="col-mapper" id="colMapper"></div>
 
