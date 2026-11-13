@@ -1,47 +1,42 @@
 // =============================================
-// UNES - data.js  ·  Datos maestros del sistema
+// UNES - data.js  –  Datos maestros del sistema
 // =============================================
 
 const NUCLEOS = [
-  "LA GUAIRA",
-  "CEFE CARMEN DE URIA",
-  "CARACAS",
-  "JUNQUITO",
-  "HELICOIDE",
-  "SAN PEDRO - COMUNAL",
-  "EL LLANITO",
-  "CAFETAL",
-  "EJE ALTOS MIRANDINOS",
-  "EJE VALLES DEL TUY",
-  "EJE BARLOVENTO",
-  "EJE METROPOLITANO",
-  "EJE GUARENAS - GUATIRE",
-  "ARAGUA",
-  "CARABOBO",
-  "YARACUY",
-  "FALCÓN",
-  "LARA",
-  "EJE LA GUAJIRA",
-  "ZULIA",
-  "EJE SUR DEL LAGO",
-  "APURE",
-  "BARINAS",
-  "COJEDES TINAQUILLO",
-  "COJEDES",
-  "GUÁRICO",
-  "PORTUGUESA",
-  "MÉRIDA",
-  "TÁCHIRA",
-  "TRUJILLO",
+  "ALTOS MIRANDINOS",
+  "AMAZONAS",
   "ANZOÁTEGUI",
+  "APURE",
+  "ARAGUA",
+  "BARINAS",
+  "BARLOVENTO",
+  "BOLÍVAR - ANGOSTURA",
+  "BOLÍVAR - PTO. ORDAZ",
+  "CARABOBO",
+  "CARACAS",
+  "COJEDES",
+  "DELTA AMACURO",
+  "EJE GUARENAS - GUATIRE",
+  "EJE METROPOLITANO",
+  "EJE VALLES DEL TUY",
+  "EL JUNQUITO",
+  "EL LLANITO",
+  "FALCÓN",
+  "GUÁRICO",
+  "LA GUAIRA",
+  "LARA",
+  "MÉRIDA",
   "MONAGAS",
   "NUEVA ESPARTA",
-  "CARUPANO",
+  "POLICARACAS",
+  "POLISUCRE",
+  "PORTUGUESA",
+  "SAN PEDRO",
   "SUCRE",
-  "AMAZONAS",
-  "BOLÍVAR - PTO. ORDAZ",
-  "BOLÍVAR - ANGOSTURA",
-  "DELTA AMACURO"
+  "TÁCHIRA",
+  "TRUJILLO",
+  "YARACUY",
+  "ZULIA"
 ];
 
 const PNF_LIST = [
@@ -77,37 +72,35 @@ const PNF_LIST = [
     id: "ciencias-fuego",
     nombre: "PNF en Ciencias del Fuego y Seguridad Contra Incendios",
     corto: "Ciencias del Fuego",
-    descripcion: "Dirigido a cuerpos de bomberos y especialistas en prevención, combate de incendios y rescate.",
-    color: "#f59e0b"
+    descripcion: "Dirigido a cuerpos de bomberos y especialistas en prevención y extinción de incendios.",
+    color: "#ef4444"
   },
   {
     id: "proteccion-civil",
     nombre: "PNF en Protección Civil y Administración de Desastres",
     corto: "Protección Civil",
-    descripcion: "Gestión integral de riesgos, prevención, mitigación y atención de emergencias.",
-    color: "#10b981"
+    descripcion: "Especialización en gestión del riesgo socio-natural y atención de emergencias y desastres.",
+    color: "#f59e0b"
   },
   {
     id: "servicio-penitenciario",
     nombre: "PNF en Servicio Penitenciario",
     corto: "Serv. Penitenciario",
-    descripcion: "Formación de profesionales para la custodia y gestión penitenciaria con enfoque en derechos humanos.",
-    color: "#f43f5e"
+    descripcion: "Custodia, seguridad y garantía de los DDHH en el régimen penitenciario venezolano.",
+    color: "#6b7280"
   },
   {
     id: "emergencias-prehospitalarias",
     nombre: "PNF en Emergencias Prehospitalarias",
     corto: "Emergencias Prehospitalarias",
-    descripcion: "Capacitación en atención médica primaria, soporte vital básico y avanzado en urgencias.",
-    color: "#ec4899"
+    descripcion: "Atención médica inmediata y soporte vital básico y avanzado en situaciones de emergencia.",
+    color: "#10b981"
   },
   {
     id: "seguridad-nacion",
     nombre: "PNF en Seguridad de la Nación",
     corto: "Seg. de la Nación",
-    descripcion: "Formación analítica y estratégica en inteligencia, contrainteligencia y soberanía nacional.",
-    color: "#64748b"
+    descripcion: "Estudio de las dinámicas estratégicas, geopolíticas y de defensa integral de la nación.",
+    color: "#800020"
   }
 ];
-
-const TRAYECTOS = ["Inicial", "I", "II", "III", "IV"];
