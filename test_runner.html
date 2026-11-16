@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+window.errors = [];
+window.onerror = function(msg, url, line, col, error) {
+  window.errors.push({msg: msg, url: url, line: line, col: col, stack: error ? error.stack : ''});
+  document.body.innerHTML += '<div style="color:red">ERROR: ' + msg + ' at line ' + line + ':' + col + '</div>';
+};
+</script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<script src="unes_sistema_final.js"></script>
+</head>
+<body>
+<h1>Testing...</h1>
+<script>
+if (window.errors.length === 0) {
+  document.body.innerHTML += '<div style="color:green">NO ERRORS DETECTED!</div>';
+}
+</script>
+</body>
+</html>
