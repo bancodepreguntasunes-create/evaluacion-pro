@@ -28,19 +28,15 @@
   <!-- Backdrop oscuro para celulares al abrir menú lateral -->
   <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
   <script>
-    // AUTO-PURGE: Limpia de inmediato cualquier base de datos con calculo invertido guardada en localStorage
+    // AUTO-PURGE v10: Fuerza la carga incondicional del dataset oficial UNES (6.070 registros)
     try {
       var _raw = localStorage.getItem('unesDB');
       if (_raw) {
         var _db = JSON.parse(_raw);
-        if (_db && _db.estudiantes) {
-          var _ap = _db.estudiantes.filter(function(e) { return e.estatus === 'Aprobado'; }).length;
-          var _rep = _db.estudiantes.filter(function(e) { return e.estatus === 'Reprobado'; }).length;
-          if (_rep > _ap || !_db.version || _db.version < 8) {
-            console.warn('Purgando localStorage corrupto...');
-            localStorage.removeItem('unesDB');
-            localStorage.removeItem('unes_estudiantes');
-          }
+        if (!_db || !_db.version || _db.version < 10 || !_db.estudiantes || _db.estudiantes.length < 6000) {
+          console.warn('Actualizando localStorage a Base Oficial UNES v10 (6.070 registros)...');
+          localStorage.removeItem('unesDB');
+          localStorage.removeItem('unes_estudiantes');
         }
       }
     } catch(e) {
@@ -153,6 +149,13 @@
       <div class="topbar-title" id="topbarTitle">Dashboard General</div>
 
       <div class="topbar-actions">
+        <button id="btnSyncDB" onclick="window.forzarSincronizacionOficial()" class="btn-sync-header" title="Forzar carga del dataset oficial completo de 6.070 estudiantes">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+          <span>Sincronizar (6.070)</span>
+        </button>
+        <span class="badge-dataset-status" id="badgeDatasetStatus">
+          <span class="status-indicator-dot"></span> 6.070 Estudiantes
+        </span>
 
         <img src="descarga.png" alt="UNES Logo" class="topbar-unes-img" title="Universidad Nacional Experimental de la Seguridad" />
 
@@ -266,25 +269,43 @@
       </div>
 
       <!-- Gráficas en grid 3 columnas -->
-      <div class="dash-charts" id="dashCharts" style="margin-bottom: 16px;">
-        <div class="chart-card dash-chart-main">
-          <div class="chart-header">
-            <h3>Aprobados vs Reprobados por PNF</h3>
+      <!-- Gráficas en grid moderno (Totales y Estadística Avanzada) -->
+      <div class="dash-charts-grid" id="dashChartsGrid">
+        <!-- Gráfico 1: PNF Aprobados vs Reprobados -->
+        <div class="chart-card-modern">
+          <div class="chart-header-modern">
+            <div class="chart-title-box">
+              <h3>📊 Aprobados vs Reprobados por Carrera / PNF</h3>
+              <p>Comparativa de rendimiento académico por programa nacional de formación</p>
+            </div>
+            <span class="badge-tag badge-tag-blue">Carga Oficial</span>
           </div>
-          <div class="chart-wrap"><canvas id="chartPNF"></canvas></div>
+          <div class="chart-canvas-wrapper"><canvas id="chartPNF"></canvas></div>
         </div>
-        <div class="chart-card dash-chart-right">
-          <div class="chart-header">
-            <h3>Distribución por Trayecto</h3>
+
+        <!-- Gráfico 2: Trayecto Formativo -->
+        <div class="chart-card-modern">
+          <div class="chart-header-modern">
+            <div class="chart-title-box">
+              <h3>🎯 Distribución por Trayecto Formativo</h3>
+              <p>Participación de estudiantes por nivel académico</p>
+            </div>
+            <span class="badge-tag badge-tag-purple">Cohorte 2026</span>
           </div>
-          <div class="chart-wrap"><canvas id="chartTrayecto"></canvas></div>
+          <div class="chart-canvas-wrapper"><canvas id="chartTrayecto"></canvas></div>
         </div>
-        <div class="chart-card dash-chart-bottom">
-          <div class="chart-header">
-            <h3>Top 10 Núcleos por Matrícula</h3>
+      </div>
+
+      <!-- Gráfico 3: Top 10 Núcleos con Mayor Matrícula (Ancho Completo) -->
+      <div class="chart-card-modern" style="margin-bottom: 20px;">
+        <div class="chart-header-modern">
+          <div class="chart-title-box">
+            <h3>🏛️ Top 10 Núcleos UNES con Mayor Matrícula Evaluada</h3>
+            <p>Centros de formación con mayor concurrencia estudiantil registrada</p>
           </div>
-          <div class="chart-wrap"><canvas id="chartNucleos"></canvas></div>
+          <span class="badge-tag badge-tag-crimson">35 Núcleos Activos</span>
         </div>
+        <div class="chart-canvas-wrapper" style="height: 310px; min-height: 310px;"><canvas id="chartNucleos"></canvas></div>
       </div>
 
       <!-- Tabla de PNFs -->
@@ -1338,7 +1359,7 @@
 
   <script src="data.js"></script>
 
-  <script src="unes_sistema_final.js"></script>
+  <script src="unes_sistema_final.js?v=20261113_v10"></script>
 
 </body>
 

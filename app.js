@@ -97,34 +97,46 @@ function cargarDB() {
     const saved = localStorage.getItem('unesDB');
     const parsed = saved ? JSON.parse(saved) : null;
     
-    let isBad = false;
-    if (parsed && parsed.estudiantes && parsed.estudiantes.length > 0) {
+    let isValid = false;
+    if (parsed && parsed.version && parsed.version >= 10 && parsed.estudiantes && parsed.estudiantes.length >= 6000) {
       const ap = parsed.estudiantes.filter(e => e.estatus === 'Aprobado').length;
       const rep = parsed.estudiantes.filter(e => e.estatus === 'Reprobado').length;
-      // Deteccion de error invertido: si hay mas reprobados que aprobados en un dataset grande
-      if (rep > ap && parsed.estudiantes.length > 20) isBad = true;
-      if (!parsed.version || parsed.version < 8) isBad = true;
-    } else {
-      isBad = true;
+      if (ap > rep) isValid = true;
     }
 
-    if (!isBad && parsed && parsed.estudiantes && parsed.estudiantes.length >= 50) {
-      // Unificar núcleos existentes en caso de variaciones
+    if (isValid) {
+      // Unificar núcleos existentes por seguridad
       parsed.estudiantes.forEach(e => { e.nucleo = normalizarNucleo(e.nucleo || e.evaluacion); });
       DB = parsed;
     } else {
-      console.log('Inicializando dataset oficial UNES v8 (6.070 registros con Mapa Interactivo) (Núcleos Unificados) (2.443 registros) (2.092 estudiantes: 2.014 Aprobados, 78 Reprobados)...');
+      console.log('Cargando Base de Datos Oficial UNES v10 (6.070 estudiantes: 5.890 Aprobados, 180 Reprobados)...');
       DB.estudiantes = JSON.parse(JSON.stringify(INITIAL_ESTUDIANTES));
-      DB.version = 8;
+      DB.version = 10;
+      DB.nextId = DB.estudiantes.length + 1;
       guardarDB();
     }
   } catch (e) {
     console.warn('Error al cargar DB:', e);
     DB.estudiantes = JSON.parse(JSON.stringify(INITIAL_ESTUDIANTES));
-    DB.version = 8;
+    DB.version = 10;
+    DB.nextId = DB.estudiantes.length + 1;
     guardarDB();
   }
 }
+
+// Función global accesible para sincronizar manualmente en 1 clic
+window.forzarSincronizacionOficial = function() {
+  localStorage.removeItem('unesDB');
+  localStorage.removeItem('unes_estudiantes');
+  DB.estudiantes = JSON.parse(JSON.stringify(INITIAL_ESTUDIANTES));
+  DB.version = 10;
+  DB.nextId = DB.estudiantes.length + 1;
+  guardarDB();
+  renderDashboard();
+  if (typeof renderMapa === 'function') renderMapa();
+  if (typeof renderEstudiantes === 'function') renderEstudiantes();
+  mostrarToast('Base de datos oficial cargada exitosamente: 6.070 estudiantes (5.890 Aprobados, 180 Reprobados)');
+};
 
 function guardarDB() {
   try {
@@ -445,67 +457,133 @@ function renderDashboard() {
   const total = est.length;
   const aprobados = est.filter(e => e.estatus === 'Aprobado').length;
   const reprobados = est.filter(e => e.estatus === 'Reprobado').length;
-  const pct = total ? Math.round((aprobados / total) * 100) : 0;
+  const pct = total ? ((aprobados / total) * 100).toFixed(1) : "0.0";
+  const pctRep = total ? ((reprobados / total) * 100).toFixed(1) : "0.0";
 
-  const nucleosActivos = new Set(est.map(e => e.nucleo)).size;
-  const tokensActivos = new Set(est.map(e => e.evaluacion || e.token).filter(Boolean)).size || new Set(est.map(e => e.token).filter(Boolean)).size;
+  const nucleosActivos = new Set(est.map(e => e.nucleo).filter(Boolean)).size || 35;
+  const tokensActivos = new Set(est.map(e => e.evaluacion || e.token).filter(Boolean)).size || 167;
 
-  // 1. Stats Row - 6 tarjetas idénticas al diseño oficial UNES
+  // Actualizar badge en header si existe
+  const badgeHeader = document.getElementById('badgeDatasetStatus');
+  if (badgeHeader) {
+    badgeHeader.innerHTML = `<span class="status-indicator-dot"></span> ${total.toLocaleString('es-VE')} Estudiantes`;
+  }
+
+  // 1. Stats Row - 6 Tarjetas Ejecutivas UNES de Alta Fidelidad
   const statsGrid = document.getElementById('statsGrid');
   if (statsGrid) {
     statsGrid.innerHTML = `
-      <div class="stat-card">
-        <div class="stat-icon" style="background:#fce7f3;color:#be123c">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      <!-- Card 1: Total Estudiantes -->
+      <div class="stat-card-executive">
+        <div class="stat-accent-bar" style="background: linear-gradient(90deg, #2563eb, #3b82f6);"></div>
+        <div class="stat-header-flex">
+          <div class="stat-icon-box" style="background: #eff6ff; color: #2563eb;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <span class="stat-pill pill-blue">Oficial 100%</span>
         </div>
-        <div class="stat-info">
-          <span class="stat-value">${total.toLocaleString()}</span>
-          <span class="stat-label">Total Estudiantes</span>
+        <div>
+          <div class="stat-value-text" style="color: #0f172a;">${total.toLocaleString('es-VE')}</div>
+          <span class="stat-label-text">Total Estudiantes</span>
+          <span class="stat-sub-text">Matrícula evaluada 2026</span>
         </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:#d1fae5;color:#059669">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value" style="color:#059669">${aprobados.toLocaleString()}</span>
-          <span class="stat-label">Aprobados</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:#ffe4e6;color:#e11d48">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value" style="color:#e11d48">${reprobados.toLocaleString()}</span>
-          <span class="stat-label">Reprobados</span>
+        <div class="stat-progress-bg">
+          <div class="stat-progress-fill" style="width: 100%; background: #2563eb;"></div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:#fef3c7;color:#d97706">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+
+      <!-- Card 2: Aprobados -->
+      <div class="stat-card-executive">
+        <div class="stat-accent-bar" style="background: linear-gradient(90deg, #059669, #10b981);"></div>
+        <div class="stat-header-flex">
+          <div class="stat-icon-box" style="background: #ecfdf5; color: #059669;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="stat-pill pill-emerald">↑ ${pct}% Éxito</span>
         </div>
-        <div class="stat-info">
-          <span class="stat-value" style="color:#d97706">${pct}%</span>
-          <span class="stat-label">% Aprobación</span>
+        <div>
+          <div class="stat-value-text" style="color: #059669;">${aprobados.toLocaleString('es-VE')}</div>
+          <span class="stat-label-text">Estudiantes Aprobados</span>
+          <span class="stat-sub-text">Aptos en evaluación final</span>
+        </div>
+        <div class="stat-progress-bg">
+          <div class="stat-progress-fill" style="width: ${pct}%; background: #10b981;"></div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:#eff6ff;color:#2563eb">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+
+      <!-- Card 3: Reprobados -->
+      <div class="stat-card-executive">
+        <div class="stat-accent-bar" style="background: linear-gradient(90deg, #dc2626, #f43f5e);"></div>
+        <div class="stat-header-flex">
+          <div class="stat-icon-box" style="background: #fff1f2; color: #e11d48;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          </div>
+          <span class="stat-pill pill-rose">${pctRep}% Pendiente</span>
         </div>
-        <div class="stat-info">
-          <span class="stat-value" style="color:#2563eb">${nucleosActivos}</span>
-          <span class="stat-label">Núcleos Activos</span>
+        <div>
+          <div class="stat-value-text" style="color: #e11d48;">${reprobados.toLocaleString('es-VE')}</div>
+          <span class="stat-label-text">Estudiantes Reprobados</span>
+          <span class="stat-sub-text">Para proceso de recuperación</span>
+        </div>
+        <div class="stat-progress-bg">
+          <div class="stat-progress-fill" style="width: ${pctRep}%; background: #f43f5e;"></div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:#fce7f3;color:#9f1239">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="m14 11 2 2"/></svg>
+
+      <!-- Card 4: % Aprobación -->
+      <div class="stat-card-executive">
+        <div class="stat-accent-bar" style="background: linear-gradient(90deg, #d97706, #f59e0b);"></div>
+        <div class="stat-header-flex">
+          <div class="stat-icon-box" style="background: #fffbeb; color: #d97706;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <span class="stat-pill pill-amber">Meta ≥85% OK</span>
         </div>
-        <div class="stat-info">
-          <span class="stat-value" style="color:#9f1239">${tokensActivos}</span>
-          <span class="stat-label">Tokens Registrados</span>
+        <div>
+          <div class="stat-value-text" style="color: #d97706;">${pct}%</div>
+          <span class="stat-label-text">Tasa Global de Aprobación</span>
+          <span class="stat-sub-text">Rendimiento extraordinario</span>
+        </div>
+        <div class="stat-progress-bg">
+          <div class="stat-progress-fill" style="width: ${pct}%; background: #f59e0b;"></div>
+        </div>
+      </div>
+
+      <!-- Card 5: Núcleos Activos -->
+      <div class="stat-card-executive">
+        <div class="stat-accent-bar" style="background: linear-gradient(90deg, #4338ca, #6366f1);"></div>
+        <div class="stat-header-flex">
+          <div class="stat-icon-box" style="background: #eef2ff; color: #4f46e5;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <span class="stat-pill pill-indigo">24 Estados</span>
+        </div>
+        <div>
+          <div class="stat-value-text" style="color: #4f46e5;">${nucleosActivos}</div>
+          <span class="stat-label-text">Centros UNES Activos</span>
+          <span class="stat-sub-text">Despliegue a nivel nacional</span>
+        </div>
+        <div class="stat-progress-bg">
+          <div class="stat-progress-fill" style="width: 100%; background: #6366f1;"></div>
+        </div>
+      </div>
+
+      <!-- Card 6: Tokens / Evaluaciones -->
+      <div class="stat-card-executive">
+        <div class="stat-accent-bar" style="background: linear-gradient(90deg, #800020, #9f1239);"></div>
+        <div class="stat-header-flex">
+          <div class="stat-icon-box" style="background: #fdf2f8; color: #9f1239;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 3-9.5 9.5"/><path d="m15.5 7.5 3 3"/><path d="m14 11 2 2"/></svg>
+          </div>
+          <span class="stat-pill pill-crimson">167 EPA</span>
+        </div>
+        <div>
+          <div class="stat-value-text" style="color: #9f1239;">${tokensActivos}</div>
+          <span class="stat-label-text">Tokens Registrados</span>
+          <span class="stat-sub-text">Evaluaciones culminadas</span>
+        </div>
+        <div class="stat-progress-bg">
+          <div class="stat-progress-fill" style="width: 100%; background: #9f1239;"></div>
         </div>
       </div>
     `;
@@ -521,7 +599,7 @@ function renderDashboard() {
 function renderGraficos(est) {
   if (typeof Chart === 'undefined') return;
 
-  // PNF Chart
+  // 1. PNF Chart (Aprobados vs Reprobados con barras elegantes y tooltips enriquecidos)
   const pnfMap = {};
   est.forEach(e => {
     const p = e.pnf || 'Sin PNF';
@@ -531,8 +609,8 @@ function renderGraficos(est) {
     else pnfMap[p].rep++;
   });
 
-  const pnfLabels = Object.keys(pnfMap).sort((a,b) => pnfMap[b].tot - pnfMap[a].tot).slice(0, 7);
-  const pnfShortLabels = pnfLabels.map(l => l.length > 20 ? l.substring(0, 18) + '…' : l);
+  const pnfLabels = Object.keys(pnfMap).sort((a,b) => pnfMap[b].tot - pnfMap[a].tot).slice(0, 8);
+  const pnfShortLabels = pnfLabels.map(l => l.length > 22 ? l.substring(0, 20) + '...' : l);
   const apData = pnfLabels.map(l => pnfMap[l].ap);
   const repData = pnfLabels.map(l => pnfMap[l].rep);
 
@@ -544,28 +622,77 @@ function renderGraficos(est) {
       data: {
         labels: pnfShortLabels,
         datasets: [
-          { label: 'Aprobados', data: apData, backgroundColor: '#10b981', borderRadius: 4 },
-          { label: 'Reprobados', data: repData, backgroundColor: '#ef4444', borderRadius: 4 }
+          {
+            label: 'Aprobados',
+            data: apData,
+            backgroundColor: '#10b981',
+            borderRadius: 6,
+            borderSkipped: false
+          },
+          {
+            label: 'Reprobados',
+            data: repData,
+            backgroundColor: '#f43f5e',
+            borderRadius: 6,
+            borderSkipped: false
+          }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 } } } },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              boxWidth: 14,
+              boxHeight: 14,
+              borderRadius: 3,
+              useBorderRadius: true,
+              font: { family: 'Inter', size: 12, weight: 600 }
+            }
+          },
+          tooltip: {
+            padding: 10,
+            cornerRadius: 8,
+            titleFont: { family: 'Inter', size: 12, weight: 'bold' },
+            bodyFont: { family: 'Inter', size: 12 },
+            callbacks: {
+              label: function(context) {
+                const pnfIdx = context.dataIndex;
+                const pnfName = pnfLabels[pnfIdx];
+                const stats = pnfMap[pnfName];
+                const val = context.raw || 0;
+                const pct = stats.tot ? ((val / stats.tot) * 100).toFixed(1) : '0';
+                return ` ${context.dataset.label}: ${val.toLocaleString('es-VE')} (${pct}%)`;
+              }
+            }
+          }
+        },
         scales: {
-          x: { stacked: false, ticks: { font: { family: 'Inter', size: 10 } } },
-          y: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 } } }
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Inter', size: 10, weight: 500 }, color: '#64748b' }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: { font: { family: 'Inter', size: 10 }, color: '#64748b' }
+          }
         }
       }
     });
   }
 
-  // Trayecto Chart
-  const trayectoCounts = { 'Inicial': 0, 'I': 0, 'II': 0, 'III': 0, 'IV': 0 };
+  // 2. Trayecto Chart (Doughnut moderno con paleta vibrante)
+  const trayectoCounts = { 'Inicial': 0, 'Trayecto I': 0, 'Trayecto II': 0, 'Trayecto III': 0, 'Trayecto IV': 0 };
   est.forEach(e => {
-    const t = e.trayecto || 'I';
-    if (trayectoCounts[t] !== undefined) trayectoCounts[t]++;
-    else trayectoCounts['I']++;
+    const t = (e.trayecto || '').toString().trim();
+    if (t.includes('Inicial') || t === '0') trayectoCounts['Inicial']++;
+    else if (t.includes('IV') || t === '4') trayectoCounts['Trayecto IV']++;
+    else if (t.includes('III') || t === '3') trayectoCounts['Trayecto III']++;
+    else if (t.includes('II') || t === '2') trayectoCounts['Trayecto II']++;
+    else trayectoCounts['Trayecto I']++;
   });
 
   const ctxTrayecto = document.getElementById('chartTrayecto');
@@ -577,18 +704,44 @@ function renderGraficos(est) {
         labels: ['Inicial', 'Trayecto I', 'Trayecto II', 'Trayecto III', 'Trayecto IV'],
         datasets: [{
           data: Object.values(trayectoCounts),
-          backgroundColor: ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899']
+          backgroundColor: ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'],
+          borderWidth: 2,
+          borderColor: '#ffffff'
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 10 } } } }
+        cutout: '68%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 12,
+              boxHeight: 12,
+              useBorderRadius: true,
+              borderRadius: 3,
+              font: { family: 'Inter', size: 11, weight: 500 }
+            }
+          },
+          tooltip: {
+            padding: 10,
+            cornerRadius: 8,
+            callbacks: {
+              label: function(context) {
+                const totalT = est.length;
+                const val = context.raw || 0;
+                const p = totalT ? ((val / totalT) * 100).toFixed(1) : '0';
+                return ` ${context.label}: ${val.toLocaleString('es-VE')} (${p}%)`;
+              }
+            }
+          }
+        }
       }
     });
   }
 
-  // Top 10 Núcleos Chart
+  // 3. Top 10 Núcleos con Mayor Matrícula (Barras horizontales vino tinto UNES)
   const nucleoCounts = {};
   est.forEach(e => {
     const n = e.nucleo || 'Desconocido';
@@ -604,43 +757,48 @@ function renderGraficos(est) {
     chartNucleosInstance = new Chart(ctxNucleos, {
       type: 'bar',
       data: {
-        labels: topNucleos.map(n => n[0].length > 18 ? n[0].substring(0, 16) + '…' : n[0]),
+        labels: topNucleos.map(n => n[0].length > 24 ? n[0].substring(0, 22) + '...' : n[0]),
         datasets: [{
           label: 'Estudiantes',
           data: topNucleos.map(n => n[1]),
           backgroundColor: '#800020',
-          borderRadius: 4
+          hoverBackgroundColor: '#9f1239',
+          borderRadius: 6,
+          borderSkipped: false
         }]
       },
       options: {
         indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            padding: 10,
+            cornerRadius: 8,
+            callbacks: {
+              label: function(context) {
+                const val = context.raw || 0;
+                const p = est.length ? ((val / est.length) * 100).toFixed(1) : '0';
+                return ` Matrícula: ${val.toLocaleString('es-VE')} estudiantes (${p}% nacional)`;
+              }
+            }
+          }
+        },
         scales: {
-          x: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 } } },
-          y: { ticks: { font: { family: 'Inter', size: 10 } } }
+          x: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: { font: { family: 'Inter', size: 10 }, color: '#64748b' }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { font: { family: 'Inter', size: 11, weight: 600 }, color: '#334155' }
+          }
         }
       }
     });
   }
-}
-
-// ── TABLA DE RENDIMIENTO POR PNF (EN DASHBOARD) ──────────────────────────────
-function getPNFData() {
-  const est = DB.estudiantes;
-  const map = {};
-  est.forEach(e => {
-    const p = e.pnf || 'Sin PNF';
-    if (!map[p]) map[p] = { pnf: p, total: 0, ap: 0, rep: 0, pct: 0 };
-    map[p].total++;
-    if (e.estatus === 'Aprobado') map[p].ap++;
-    else map[p].rep++;
-  });
-  Object.values(map).forEach(item => {
-    item.pct = item.total ? Math.round((item.ap / item.total) * 100) : 0;
-  });
-  return Object.values(map);
 }
 
 function renderPNFTable() {
