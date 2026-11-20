@@ -52,7 +52,7 @@ body {
   line-height: 1.45;
 }
 
-/* ── SIDEBAR ELEGANTE CLARO / MARINO ────────────────────────────────────── */
+/* ── SIDEBAR ELEGANTE CLARO ─────────────────────────────────────────────── */
 #sidebar {
   width: var(--sidebar-w);
   min-width: var(--sidebar-w);
@@ -225,6 +225,84 @@ header {
   border-color: #94a3b8;
 }
 
+/* ── BARRA DE FILTRO POR NÚCLEO EN DASHBOARD ────────────────────────────── */
+.dash-filter-bar {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.dfb-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dfb-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dfb-select {
+  padding: 7px 12px;
+  border: 1.5px solid #2563eb;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-main);
+  background: #f8fafc;
+  outline: none;
+  cursor: pointer;
+  min-width: 270px;
+  transition: all 0.15s ease;
+}
+
+.dfb-select:focus {
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.dfb-btn-reset {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dfb-btn-reset:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.dfb-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-subtle);
+  background: var(--bg-card-subtle);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
 /* ── ÁREA DE CONTENIDO Y VISTAS ─────────────────────────────────────────── */
 .scroll-area {
   flex: 1;
@@ -256,6 +334,7 @@ header {
   box-shadow: var(--shadow-sm);
   position: relative;
   overflow: hidden;
+  transition: transform 0.15s ease;
 }
 
 .kpi-card::before {
@@ -352,15 +431,15 @@ header {
 .map-workspace {
   display: grid;
   grid-template-columns: 1fr 310px;
-  min-height: 520px;
+  min-height: 530px;
 }
 
 .map-canvas-area {
-  background: #f0f7ff; /* Fondo claro tipo agua/hielo */
+  background: #f0f7ff; /* Fondo agua/hielo claro */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 14px;
   position: relative;
   overflow: hidden;
   border-right: 1px solid var(--border);
@@ -368,7 +447,7 @@ header {
 
 .map-svg-element {
   width: 100%;
-  max-width: 720px;
+  max-width: 760px;
   height: auto;
   max-height: 540px;
   display: block;
@@ -387,6 +466,24 @@ header {
   stroke-width: 1.5;
 }
 
+.state-poly.highlighted-state {
+  stroke: #1d4ed8 !important;
+  stroke-width: 2.2 !important;
+  filter: brightness(1.2) drop-shadow(0 0 6px rgba(37,99,235,0.4)) !important;
+}
+
+/* Estilo para Guayana Esequiba */
+.esequibo-poly {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.esequibo-poly:hover {
+  stroke: #1e293b;
+  stroke-width: 1.8;
+  filter: brightness(0.95);
+}
+
 /* Estilos de pines de núcleos */
 .nucleo-marker {
   cursor: pointer;
@@ -403,7 +500,28 @@ header {
   opacity: 1;
 }
 
-/* Panel de detalles lateral */
+.nucleo-marker.selected-pin .pin-dot {
+  r: 8 !important;
+  fill: #2563eb !important;
+  stroke: #ffffff !important;
+  stroke-width: 2.5 !important;
+}
+
+.nucleo-marker.selected-pin .pin-ring {
+  r: 15 !important;
+  stroke: #2563eb !important;
+  stroke-width: 2 !important;
+  opacity: 1 !important;
+  animation: pulsePin 1.5s infinite;
+}
+
+@keyframes pulsePin {
+  0% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.3); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+
+/* Panel de Inspección Lateral */
 .map-inspect-panel {
   background: #ffffff;
   display: flex;
@@ -558,7 +676,7 @@ header {
   height: 250px;
 }
 
-/* Tablas estilizadas en claro */
+/* Tablas estilizadas */
 .data-table-wrap {
   overflow-x: auto;
 }
@@ -721,7 +839,7 @@ header {
   transition: opacity 0.15s;
   z-index: 9999;
   box-shadow: var(--shadow-md);
-  max-width: 220px;
+  max-width: 240px;
 }
 
 #floating-tooltip.active {
@@ -843,39 +961,91 @@ header {
 
   <div class="scroll-area">
 
-    <!-- ══ VISTA: DASHBOARD (SOLO MAPA Y TOTALES) ═══════════════════════════ -->
+    <!-- ══ VISTA: DASHBOARD (SOLO MAPA Y TOTALES + FILTRO POR NÚCLEO) ════════ -->
     <div id="view-dashboard" class="view-panel active">
       
-      <!-- 4 KPIS -->
-      <div class="kpi-deck">
-        <div class="kpi-card kpi-total">
-          <div class="kpi-label">Total Matriculados</div>
-          <div class="kpi-num" style="color:#2563eb">6,070</div>
-          <div class="kpi-subtext">Estudiantes registrados · 2026</div>
+      <!-- BARRA DE FILTRO POR NÚCLEO EN EL DASHBOARD -->
+      <div class="dash-filter-bar">
+        <div class="dfb-left">
+          <label for="dash-filter-nucleo" class="dfb-label">
+            <span>🏛️</span> Filtrar Dashboard por Núcleo:
+          </label>
+          <select id="dash-filter-nucleo" class="dfb-select" onchange="onDashboardNucleoChange(this.value)">
+<option value="">Todos los Núcleos (Nacional · 34 Centros)</option>
+<option value="ALTOS MIRANDINOS">ALTOS MIRANDINOS (MIRANDA) - 43 est.</option>
+<option value="AMAZONAS">AMAZONAS (AMAZONAS) - 158 est.</option>
+<option value="ANZOÁTEGUI">ANZOÁTEGUI (ANZOÁTEGUI) - 128 est.</option>
+<option value="APURE">APURE (APURE) - 76 est.</option>
+<option value="BARINAS">BARINAS (BARINAS) - 277 est.</option>
+<option value="BARLOVENTO">BARLOVENTO (MIRANDA) - 323 est.</option>
+<option value="BOLÍVAR - ANGOSTURA">BOLÍVAR - ANGOSTURA (BOLÍVAR) - 133 est.</option>
+<option value="BOLÍVAR - PTO. ORDAZ">BOLÍVAR - PTO. ORDAZ (BOLÍVAR) - 437 est.</option>
+<option value="CAFETAL">CAFETAL (CARACAS) - 96 est.</option>
+<option value="CARABOBO">CARABOBO (CARABOBO) - 95 est.</option>
+<option value="CARACAS">CARACAS (CARACAS) - 550 est.</option>
+<option value="COJEDES">COJEDES (COJEDES) - 2 est.</option>
+<option value="DELTA AMACURO">DELTA AMACURO (DELTA AMACURO) - 44 est.</option>
+<option value="EJE METROPOLITANO">EJE METROPOLITANO (MIRANDA) - 50 est.</option>
+<option value="EL JUNQUITO">EL JUNQUITO (CARACAS) - 16 est.</option>
+<option value="EL LLANITO">EL LLANITO (CARACAS) - 96 est.</option>
+<option value="FALCÓN">FALCÓN (FALCÓN) - 185 est.</option>
+<option value="GUARENAS - GUATIRE">GUARENAS - GUATIRE (MIRANDA) - 134 est.</option>
+<option value="LA GUAIRA">LA GUAIRA (LA GUAIRA) - 73 est.</option>
+<option value="MONAGAS">MONAGAS (MONAGAS) - 281 est.</option>
+<option value="MÉRIDA">MÉRIDA (MÉRIDA) - 442 est.</option>
+<option value="NUEVA ESPARTA">NUEVA ESPARTA (NUEVA ESPARTA) - 65 est.</option>
+<option value="POLICARACAS">POLICARACAS (CARACAS) - 41 est.</option>
+<option value="POLISUCRE">POLISUCRE (CARACAS) - 37 est.</option>
+<option value="PORTUGUESA">PORTUGUESA (PORTUGUESA) - 436 est.</option>
+<option value="PRUEBA LR">PRUEBA LR (LARA) - 1 est.</option>
+<option value="SAN PEDRO">SAN PEDRO (CARACAS) - 37 est.</option>
+<option value="SUCRE - CARÚPANO">SUCRE - CARÚPANO (SUCRE) - 466 est.</option>
+<option value="SUCRE - CUMANÁ">SUCRE - CUMANÁ (SUCRE) - 677 est.</option>
+<option value="TRUJILLO">TRUJILLO (TRUJILLO) - 109 est.</option>
+<option value="TÁCHIRA">TÁCHIRA (TÁCHIRA) - 52 est.</option>
+<option value="VALLES DEL TUY">VALLES DEL TUY (MIRANDA) - 190 est.</option>
+<option value="YARACUY">YARACUY (YARACUY) - 18 est.</option>
+<option value="ZULIA">ZULIA (ZULIA) - 302 est.</option>
+          </select>
+          <button class="dfb-btn-reset" id="btn-reset-nuc-filter" onclick="resetDashboardNucleoFilter()" style="display:none">
+            ↺ Ver Todos (Nacional)
+          </button>
         </div>
-        <div class="kpi-card kpi-aprob">
-          <div class="kpi-label">Aprobados</div>
-          <div class="kpi-num" style="color:#059669">5,890</div>
-          <div class="kpi-subtext">97.0% tasa de aprobación</div>
-        </div>
-        <div class="kpi-card kpi-reprob">
-          <div class="kpi-label">Reprobados</div>
-          <div class="kpi-num" style="color:#dc2626">180</div>
-          <div class="kpi-subtext">3.0% índice de reprobación</div>
-        </div>
-        <div class="kpi-card kpi-nucleos">
-          <div class="kpi-label">Centros / Núcleos</div>
-          <div class="kpi-num" style="color:#d97706">34</div>
-          <div class="kpi-subtext">Distribuidos a nivel nacional</div>
+        <div class="dfb-badge" id="dash-filter-status-badge">
+          Mostrando: Todos los Núcleos (6.070 estudiantes)
         </div>
       </div>
 
-      <!-- MAPA COROPLÉTICO VECTORIAL SVG -->
+      <!-- 4 KPIS DINÁMICOS -->
+      <div class="kpi-deck">
+        <div class="kpi-card kpi-total">
+          <div class="kpi-label" id="kpi-label-1">Total Matriculados</div>
+          <div class="kpi-num" id="kpi-val-1" style="color:#2563eb">6,070</div>
+          <div class="kpi-subtext" id="kpi-sub-1">Estudiantes registrados · 2026</div>
+        </div>
+        <div class="kpi-card kpi-aprob">
+          <div class="kpi-label" id="kpi-label-2">Aprobados</div>
+          <div class="kpi-num" id="kpi-val-2" style="color:#059669">5,890</div>
+          <div class="kpi-subtext" id="kpi-sub-2">97.0% tasa de aprobación</div>
+        </div>
+        <div class="kpi-card kpi-reprob">
+          <div class="kpi-label" id="kpi-label-3">Reprobados</div>
+          <div class="kpi-num" id="kpi-val-3" style="color:#dc2626">180</div>
+          <div class="kpi-subtext" id="kpi-sub-3">3.0% índice de reprobación</div>
+        </div>
+        <div class="kpi-card kpi-nucleos">
+          <div class="kpi-label" id="kpi-label-4">Centros / Núcleos</div>
+          <div class="kpi-num" id="kpi-val-4" style="color:#d97706">34</div>
+          <div class="kpi-subtext" id="kpi-sub-4">Distribuidos a nivel nacional</div>
+        </div>
+      </div>
+
+      <!-- MAPA COROPLÉTICO VECTORIAL SVG CON GUAYANA ESEQUIBA -->
       <div class="map-showcase">
         <div class="map-showcase-header">
           <div class="msh-left">
-            <h3>🗺️ Mapa Coroplético Vectorial — Cobertura y Rendimiento por Estado y Núcleo</h3>
-            <p>Haz clic en cualquier estado o pin de núcleo para ver el desglose en el panel derecho</p>
+            <h3>🗺️ Mapa Coroplético Vectorial — Cobertura Territorial y Núcleos UNES</h3>
+            <p>Incluye Guayana Esequiba (Zona en Reclamación) · Clic en estados o pines para ver detalles</p>
           </div>
           <div class="map-modes">
             <button class="mode-btn active" id="btn-mode-pct" onclick="switchMapMetric('pct')">% Éxito</button>
@@ -884,9 +1054,16 @@ header {
         </div>
 
         <div class="map-workspace">
-          <!-- Canvas SVG -->
+          <!-- Canvas SVG ampliado para incluir El Esequibo -->
           <div class="map-canvas-area">
-            <svg class="map-svg-element" viewBox="0 0 601 528" xmlns="http://www.w3.org/2000/svg">
+            <svg class="map-svg-element" viewBox="0 0 685 528" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <!-- Patrón rayado diagonal característico para Guayana Esequiba -->
+                <pattern id="hatch-esequibo" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                  <rect width="8" height="8" fill="#e2e8f0" />
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="#94a3b8" stroke-width="2" />
+                </pattern>
+              </defs>
               <g id="svg-states-layer">
 <path id="VE-A" class="state-poly" d="m 290.0502,90.456198 -0.25,2.69 -1.24,0.99 -5.43,2.84 -1.97,0.24 -2.6,-0.24 -0.98,-0.62 -1.06,-1.3 0,0 0.56,-0.68 0,0 0.74,-0.61 1.24,-2.23 1.11,-0.12 0.62,-0.62 0.24,-1.11 1.36,-0.24 0.87,1.11 1.23,-0.13 5.31,0 0,0 z" fill="#10b981" stroke="#334155" stroke-width="0.85" stroke-linejoin="round" data-id="VE-A" data-state="CARACAS" data-pct="95.8" data-total="873" data-aprobados="836" data-reprobados="37" onmouseenter="onStateHover(this, event)" onmouseleave="onStateLeave(this)" onclick="onStateClick(this)"><title>CARACAS: 95.8% éxito (873 est.)</title></path>
 <path id="VE-B" class="state-poly" d="m 472.7702,184.9362 -0.84,0.32 -0.86,0 -1.36,0.37 -0.62,1.61 -0.99,0.98 -1.11,0.87 -1.85,0.99 -1.85,-0.13 -1.48,-0.74 -1.98,-0.12 -4.81,-1.85 -1.86,0.12 -1.35,0.74 -1.73,-0.86 -1.36,1.11 -0.99,1.23 -1.73,0.37 -1.23,0 -1.36,2.35 -1.6,0.99 -1.61,0.61 -0.86,0.74 -3.21,1.73 -2.23,0.25 -1.73,-0.12 -1.23,-0.75 -1.85,0.25 -2.72,1.73 -1.48,0 -1.73,1.23 -2.47,3.83 -0.86,1.11 -1.61,1.12 -2.1,1.23 -2.47,-0.12 -2.96,-0.5 -1.6,-1.97 -2.47,-1.48 -1.61,-1.73 -2.1,-0.13 -4.44,2.1 -1.73,0.99 -1.85,-0.74 -2.6,-0.12 -0.86,0.74 -1.73,0.98 -1.48,1.73 0.25,2.47 0.37,1.11 1.11,0.99 1.36,0.74 0.12,1.24 -0.87,1.23 -4.19,0.25 -3.83,2.1 -1.73,1.6 -3.33,0.99 -1.98,0 -1.6,-0.25 -1.98,-1.48 -2.1,-1.36 -1.48,-1.97 -2.1,-0.87 -2.84,-0.61 -2.1,-0.62 -4.94,-1.85 -2.1,-0.5 -2.22,-0.12 0,0 -1.48,-1.11 0,0 -1.48,-0.99 -0.74,-1.23 0.99,-1.73 0.12,-2.72 1.23,-1.36 1.24,-2.47 1.23,-1.85 3.21,-4.07 1.36,-0.99 1.61,-1.73 1.23,-1.48 1.24,-1.85 0.12,-2.23 0.86,-1.97 1.11,-3.21 0.13,-1.98 -1.11,-1.36 0.24,-1.97 0.74,-1.48 1.36,-1.24 3.71,-0.24 3.95,0.12 0.86,0.86 0.99,1.36 2.47,0 0.74,-1.23 0.74,-2.23 1.11,-1.85 0.5,-1.97 -0.87,-1.98 -2.84,-1.36 -1.85,-1.23 -1.11,-0.99 -1.61,-0.74 0,-2.47 -2.22,-2.22 -2.34,-1.24 -2.47,-0.86 -2.1,-0.37 -1.61,-1.48 -1.73,-1.86 -1.11,-2.22 -1.36,-1.73 0.62,-1.73 1.98,-0.24 1.11,-0.87 0.99,-1.11 -0.25,-1.48 -1.24,-0.99 -1.85,-0.24 -2.1,-1.11 -5.06,-4.57 -1.11,0.24 -0.74,1.36 -2.96,0.5 -3.22,-0.25 -1.6,-0.25 0,-2.71 -1.61,-0.75 -0.12,-2.71 0.62,-1.98 0,-2.1 -0.87,-2.1 -0.91,-1.6 -0.12,-1.85 0,0 0.37,-1.36 0,0 2.34,0.12 1.61,-0.86 1.85,-1.24 1.36,-1.23 1.36,-1.61 0.98,-0.61 1.36,-1.24 1.24,-0.86 0.12,-0.8 0,0 6.99,1.2 8.61,2.45 4.01,-1 7.31,0.03 1.63,-0.32 1.05,-0.34 1.4,-0.73 0.79,-2.95 3.68,-2.29 2.29,-0.38 2.16,0.38 2.13,-0.31 0.19,-0.32 0,0 0.51,0.78 0.49,0.37 1.24,1.36 0.49,1.85 1.36,0.87 1.23,0.37 1.36,0.62 1.36,0.37 1.11,0.74 4.45,0 1.23,-0.62 3.58,-1.36 3.21,0 0.87,0.37 1.11,0.74 0,0 0.33,0 0,0 0.02,0.74 -1.97,1.12 -2.72,0.74 -0.49,1.6 0.25,1.98 1.11,0.86 1.36,0.5 0.86,0.74 0.37,1.48 1.23,0.86 0.87,1.85 -0.87,0.87 -0.49,1.73 0.49,1.97 1.61,1.24 1.23,1.6 1.36,4.45 0,1.48 -0.99,0.49 -1.11,1.11 -1.97,1.61 -1.36,1.73 0.12,2.1 0.99,2.1 0.99,1.72 0.74,2.1 0.74,0.99 2.35,-0.62 1.23,-0.49 1.48,-0.25 1.61,0.87 2.71,1.11 4.7,3.58 2.34,2.59 1.98,1.11 1.48,1.36 3.83,2.84 0.98,1.73 0.62,1.61 0.25,1.72 1.11,1.98 1.11,1.48 7.78,-0.37 2.59,-0.86 2.47,0 0.5,1.23 -1.86,1.73 -2.59,-0.12 0.25,0.86 -0.37,2.47 0.86,1.24 1.85,1.35 2.6,0.99 5.18,1.48 1.98,0.74 2.34,1.24 1.73,0.49 0,0 z" fill="#10b981" stroke="#334155" stroke-width="0.85" stroke-linejoin="round" data-id="VE-B" data-state="ANZOÁTEGUI" data-pct="96.9" data-total="128" data-aprobados="124" data-reprobados="4" onmouseenter="onStateHover(this, event)" onmouseleave="onStateLeave(this)" onclick="onStateClick(this)"><title>ANZOÁTEGUI: 96.9% éxito (128 est.)</title></path>
@@ -913,42 +1090,48 @@ header {
 <path id="VE-X" class="state-poly" d="m 311.9102,86.916198 0.11,1.91 -0.61,1.23 -1.36,0.37 -1.85,0.25 -1.11,-0.12 -1.36,-0.99 -10.25,-0.12 -1.61,0.37 -1.72,0.86 0,0 -2.35,-0.25 0,0 -5.31,0 -1.23,0.13 -0.87,-1.11 -1.36,0.24 -0.24,1.11 -0.62,0.62 -1.11,0.12 -1.24,2.23 -0.74,0.61 0,0 -0.62,0.75 -1.11,0.49 0,0 -1.11,0.62 -1.11,0 -0.86,-0.99 -0.99,-0.25 -1.11,0.74 -0.5,0.99 -0.74,0.49 -1.11,-0.12 -0.12,-1.11 -0.99,-1.36 0.25,-1.23 -0.74,-0.74 -0.22,-1.85 0,0 6.31,-0.43 5,-1.96 4.68,-1.39 11.2,-1.21 8.88,0 5.71,0.53 1.47,0.42 z" fill="#059669" stroke="#334155" stroke-width="0.85" stroke-linejoin="round" data-id="VE-X" data-state="LA GUAIRA" data-pct="98.6" data-total="73" data-aprobados="72" data-reprobados="1" onmouseenter="onStateHover(this, event)" onmouseleave="onStateLeave(this)" onclick="onStateClick(this)"><title>LA GUAIRA: 98.6% éxito (73 est.)</title></path>
 <path id="VE-Y" class="state-poly" d="m 545.4202,178.5662 -0.92,0.65 -1.7,-1.05 0,-0.92 0.39,-1.05 1.18,-0.52 1.05,0.39 0.39,1.31 -0.39,1.19 z m -4.19,-1.05 -0.92,0.39 -0.79,-0.26 -0.52,-1.05 0.26,-0.65 1.18,-0.79 1.44,0.13 0,1.05 -0.65,1.18 z m 20.02,-5.24 0.26,1.18 -0.92,1.05 -1.96,0.52 -0.79,-0.92 0,-1.31 1.7,0.13 1.71,-0.65 z m -2.09,-0.65 -0.39,0.13 -0.79,-0.92 1.05,-0.92 1.05,1.05 -0.92,0.66 z m -8.9,-2.62 -1.83,1.44 -0.65,1.18 -0.79,1.05 -0.26,0.79 -1.83,0.79 -1.96,0.52 -1.83,0 0.13,-1.96 1.44,-0.26 1.57,0 0.39,-1.18 -0.13,-1.31 -1.05,-0.26 -0.92,0.65 -1.7,1.7 -0.92,-0.26 0,-1.05 1.57,-1.05 0.13,-0.92 0.65,-0.13 1.44,-0.79 1.31,-0.13 1.44,-0.92 3.14,-0.13 1.18,0.39 -0.52,1.84 z m 4.32,-2.09 -0.65,1.31 -1.18,-0.13 -0.39,-0.79 0,-0.92 1.18,-0.52 1.04,1.05 z m 2.88,1.96 -1.96,1.05 -0.26,1.31 -0.92,0.65 -0.92,1.18 -1.44,0.79 -1.05,-0.26 0.39,-1.05 0,-0.52 0.92,-0.79 0.79,-0.92 0.65,-1.18 1.18,-0.26 1.7,0.13 0.92,-0.65 1.31,-2.09 1.05,-0.39 0.39,1.05 -0.65,0.39 -0.79,1.05 -1.31,0.51 z m -7.86,-3.66 -1.44,0.13 -0.52,-0.39 -0.13,-1.05 -0.92,-1.44 4.45,-4.19 0.79,0 1.31,0.39 0.26,1.18 -0.52,1.57 -1.44,1.83 -1.84,1.97 z m 6.29,-6.81 -1.57,0.13 -1.7,-1.44 1.05,-1.05 3.27,1.7 -1.05,0.66 z m -11.78,4.98 -1.7,0 0.65,-1.57 1.05,-1.7 1.96,-1.18 1.44,-1.05 1.57,-1.96 1.31,-0.65 0.52,1.18 -0.52,1.05 -1.44,0.79 -1.57,2.09 -1.31,0.92 -0.65,1.31 -1.31,0.77 z m 8.5,-9.56 -0.65,0.52 -1.44,-0.13 -0.39,-1.05 0.39,-1.44 0.65,-0.79 0.79,-0.39 1.18,0.13 0.65,1.44 -0.52,1.44 -0.66,0.27 z m 6.02,-1.18 0.65,1.05 0.92,-0.13 0.13,1.05 -0.65,1.05 -0.79,0 -0.79,-1.18 -1.44,-0.92 -1.57,-0.79 -0.13,-1.05 0.26,-0.79 1.18,-1.83 0.92,-0.26 0.79,0.79 -0.39,0.65 -0.65,0.39 0.39,1.31 1.17,0.66 z m -8.34,-3.68 -1.66,0.96 -0.75,-0.59 -0.05,-0.6 0.6,-0.54 1.05,-0.65 1.18,-2.62 -0.52,-3.8 -0.46,-1.54 0.41,-0.32 0.11,-1.18 0.96,-0.38 0.78,0.1 1.69,1.17 1.54,1.78 1.23,3.21 -0.21,1.02 -1.61,0.16 -0.75,1.02 -2.03,1.87 -1.51,0.93 z m -13.25,-18.3 -0.52,1.31 -1.05,-0.26 -0.92,-0.92 -0.65,-1.57 0.52,-0.65 2.22,1.44 0.4,0.65 z m -26.18,-4.72 0.8,0.11 0.21,-0.8 -0.75,-1.02 -0.48,-0.96 0.27,-0.64 1.22,-0.85 0.92,0.04 0.7,1.24 1.93,-0.05 2.52,1.02 2.41,0.7 1.13,-0.05 -1.5,-2.25 -1.02,-0.96 -0.32,-1.34 0.43,-0.91 0.86,-0.21 5.09,3.64 3.08,3.48 0.5,0.91 1.38,1.48 1.83,2.53 3.79,1.53 2.58,0.47 4.93,0.14 1.74,-0.06 2.6,1.1 0.98,2.54 0,2.52 0.53,0.66 0.78,4.6 -0.79,1.96 -1.68,1.2 -0.18,-0.34 -1.19,2.19 -0.24,1.58 -1.57,0.5 -1.5,-0.07 -0.36,1.21 -1.79,0.07 -1.5,0.29 -1.71,0.64 -0.71,1.43 1.14,0.71 1.36,-1.07 1.07,-0.64 1.36,0 0.34,1.15 1.23,-0.36 0.93,-0.93 2.21,-1.64 0.93,-0.86 0.43,0.43 -0.07,2.14 -1.93,3.2 -2.02,1.65 -0.9,1.41 -1.49,0.92 -0.51,2.14 -0.7,1.29 0.71,1.14 1,0.57 -1.79,2.5 -2,3.57 -0.14,2.86 -0.93,0.79 -0.29,1.07 0.71,1.07 1.21,0.14 1.64,1.14 1.28,0.43 0.29,0.86 3.14,0.57 1.39,0.89 0.97,-0.24 0.64,-3.98 0.78,-0.87 1.49,-0.12 0.65,1.05 1,-0.36 0.14,-0.64 2.49,-0.41 5.16,-0.43 1.49,0.41 2.43,1.96 7.13,1.02 0.86,-1.33 4.64,0 0.79,-0.93 -2.5,-0.71 -1.28,-0.14 0.02,-1.02 1.17,-0.48 6.45,0.22 1.34,0.25 7.15,2.04 3.5,1.93 3,2.64 1.36,2.93 2.14,1.71 0.93,1.43 0,2 -1.5,1.78 -2.36,-0.14 -1.93,1.21 -1.28,0.64 -1.71,1.28 -0.07,2.33 -1,1.64 0.38,1.53 -1.18,0.99 -2.47,-0.19 -1.38,0.57 -4.64,2.52 -1.71,1.5 -1.03,1.21 0,0 -13.62,0.25 -1.11,0.86 -1.85,0.37 -0.37,0.62 -0.74,0 -0.49,-0.74 -1.24,-0.12 -0.49,0.86 -0.74,0.74 -1.48,0.37 -0.86,0.99 -1.36,-0.12 -2.1,1.11 -1.48,-0.86 -1.11,-0.86 -0.74,-2.84 -0.62,-0.99 -1.11,-0.62 -1.98,0.12 -1.73,1.36 -2.84,1.61 -0.37,0.74 -1.6,0.37 -1.36,0.99 -2.1,0 -1.36,0.74 -1.11,0.74 -0.74,1.36 -1.85,0 -1.36,-0.99 -1.98,-0.12 -1.36,-0.74 0,0 -2.59,-0.37 -2.35,-1.85 0,0 -1.36,-1.23 -0.74,-1.73 -1.24,-1.98 -0.74,-1.73 -1.11,-2.1 -2.35,-0.62 -1.11,0.49 -1.85,0.25 -1.48,0 -0.74,0.86 -1.23,0.37 -1.36,1.11 -3.09,-0.99 -1.23,-0.74 0,0 -0.25,-1.48 -0.62,-1.23 -0.99,-1.48 -1.23,-1.48 -4.32,-2.96 0,0 -2.1,-0.74 -3.09,-0.12 -4.32,0.12 0,0 -0.49,-1.73 -1.11,-1.23 0,0 -1.61,-1.48 -0.74,-0.99 -1.23,-1.11 0,0 -0.1,-1.54 -0.16,-0.03 -0.16,-2.61 -0.57,0.21 0.07,-0.23 2.8,-1.15 0,0 3.29,-0.16 2.96,-0.66 2.47,-2.14 2.3,-0.66 0.82,-1.32 3.95,-4.44 2.3,-1.32 1.15,-1.98 0.66,-4.12 -0.16,-6.26 0,0 -0.66,-2.3 -1.15,-0.16 0,0 -1.15,0.99 -1.98,0.49 -4.12,-0.49 -2.14,-0.49 -0.99,-0.82 0,0 0.17,-1.81 -0.49,-1.65 0,0 -0.17,-2.96 -1.98,-1.15 -1.32,-1.32 0,-3.29 0.16,-3.29 -1.32,-3.79 0,0 -0.66,-2.31 1.98,-1.98 0,0 1.65,-1.98 0.87,-2.47 0,0 -0.02,0.13 1.48,0.86 0.25,-0.31 0.27,-2.46 -0.16,-1.71 0.54,-2.14 0.16,-1.82 0.54,-1.39 0.75,-1.29 1.24,-1.06 0.37,-0.76 1.39,-0.64 1.66,-0.32 3.05,0.38 1.12,0.75 3.43,3.21 6.91,6.96 1.04,0.56 z" fill="#10b981" stroke="#334155" stroke-width="0.85" stroke-linejoin="round" data-id="VE-Y" data-state="DELTA AMACURO" data-pct="95.5" data-total="44" data-aprobados="42" data-reprobados="2" onmouseenter="onStateHover(this, event)" onmouseleave="onStateLeave(this)" onclick="onStateClick(this)"><title>DELTA AMACURO: 95.5% éxito (44 est.)</title></path>
 <path id="VE-Z" class="state-poly" d="m 387.6102,370.6262 -1.36,-0.8 -0.43,-0.68 -1.01,-0.8 -2.18,-1.05 -0.98,-0.26 -1.56,0.04 -0.81,0.93 -0.09,2.39 1.65,2.46 2.27,0.48 0.83,2.73 1.48,2.87 0.83,1.43 0.68,0.82 4.8,4.89 3.17,2.96 3.56,1.61 2.55,1.41 4.37,3.49 1.85,3.24 0.19,1.76 -0.46,1.76 -1.3,1.2 0.28,2.23 -0.28,3.24 -0.11,6.16 0.39,3.56 2.22,3.2 2.65,2.18 3.09,5.18 2.35,5.07 0.12,6.29 -0.62,1.98 -1.23,1.48 0,1.36 1.11,1.85 3.95,0.86 4.57,1.61 8.95,-1.28 9.55,0.64 0.84,0.61 1.28,3.36 0.74,2.6 -2.51,3.05 -0.08,1.52 -5.19,0.74 -3.03,0.86 -2.28,2.1 -3.7,2.96 -2.35,0.87 -5.68,0.12 -2.84,0.99 -1.73,0.99 -1.73,2.71 -0.61,1.98 -0.25,8.02 -0.86,2.35 -2.6,2.59 -5.18,4.08 -2.84,0 -0.37,-1.73 -2.97,0 -2.1,1.6 -2.96,1.49 -2.84,2.19 -1.73,2.1 -4.32,3.46 -1.97,-0.25 -2.1,-1.23 -2.26,-0.05 -2.31,2.39 -2.38,1.03 -2.68,2.43 -4.57,0.86 -1.24,0.5 -1.28,0.77 -0.33,1.85 -0.31,2.92 -0.57,1.71 -0.22,1.52 -3.28,0 -1.91,0.37 -1.36,0.61 -3,3.27 -0.23,2.83 -1.21,3.78 -2.35,0.86 -2.72,-0.15 -0.72,-0.63 0.48,-1.31 0.62,-0.99 1.48,-1.48 0.74,-1.49 0.12,-5.3 -1.11,-1.73 -0.74,-0.74 -3.58,-0.62 -5.43,0.37 -6.18,3.09 -1.11,1.72 -1.23,1.36 -1.36,1.11 -0.87,1.12 -2.59,0.24 -3.21,1.98 -2.72,0.12 -1.97,-0.99 -1.48,0.87 -3.09,-0.37 -1.2,-1.34 -7.66,-6.5 -1.63,-0.44 -10.56,-9.89 -3.88,-3.36 0.24,-1.32 -0.13,-3.58 -1.6,-0.61 -0.77,-4.75 -0.1,-5.38 -1.97,-1.97 -0.82,-3.02 -2.08,-4.74 -0.37,-3.21 -2.06,-3.3 -0.54,-5.83 -1.6,-0.99 -0.13,-1.48 -1.72,-2.97 -0.5,-2.71 0.99,-1.11 0.74,-1.73 -1.6,-2.52 -1.19,-0.91 -2.74,-1.13 -1.75,-3.1 -7.27,-6.32 -3.08,-0.1 -0.37,-2.96 -1.15,-1.81 -1.32,-1.03 -2.72,0.12 -1.73,-0.74 -1.6,0.12 -3.09,0 -1.73,-0.98 2.1,-1.98 16.05,-13.95 3.21,-0.5 -0.37,-2.96 2.6,-1.97 3.21,-2.84 -0.25,-2.97 -3.39,-1.18 -1.06,-1.29 -2.09,-1.36 0.12,-3.82 -0.62,-2.6 -1.73,-1.85 -1.35,-0.12 -1.73,0.25 -2.96,-1.27 -0.01,-1.33 -0.74,-1.73 -1.23,-3.82 -1.24,-0.67 0.13,-2.35 2.1,-1.72 -0.99,-2.23 -3.46,-1.85 -2.81,-3.03 -0.87,-2.87 0.04,-1.81 0.19,-1.2 0.72,-1.52 0.14,-2.53 -0.74,-2.84 -2.1,-1.36 -0.57,-3.24 0.07,-2.94 1.61,-2.34 0.32,-6.61 -0.2,-7.1 1.61,-2.47 0.24,-1.85 -1.95,-0.13 -0.41,-1.67 0.39,-8.08 1.73,-1.97 1.97,-0.99 2.1,-1.6 1.73,-0.99 1.61,-2.47 0.37,-11.29 4.19,-6.17 2.72,-2.59 0.74,-1.11 2.22,-0.37 -0.24,-3.22 -1.61,-0.24 -0.62,-1.24 -0.37,-1.85 0.1,-0.97 0,0 0.45,0 2.14,0.82 0.82,0.66 1.65,0.5 2.14,-0.17 3.29,0.82 1.65,0.83 0,1.97 0.98,1.65 0,2.96 -1.31,0.66 0.49,1.48 -0.16,1.81 -0.83,1.98 0,2.3 0.66,1.98 4.28,-0.33 1.65,1.81 2.3,0.33 1.32,-0.99 3.79,-0.82 6.25,-0.17 2.64,-0.82 2.63,0.33 4.77,-2.47 0.99,-1.32 2.31,-1.81 3.29,-3.12 2.63,-0.33 0.66,1.31 -0.16,3.79 1.15,0.82 0.33,1.98 1.65,-0.17 2.14,-0.98 1.15,-0.99 3.29,0.16 3.13,-1.48 1.32,-1.65 1.48,-2.14 2.14,-2.3 2.63,-6.09 1.98,-0.99 1.48,-0.49 2.96,-0.33 3.13,0.82 0.99,1.98 -0.33,4.44 -1.65,4.28 0.17,4.78 2.3,2.96 2.47,0 2.14,-2.64 1.98,-1.48 5.76,0 2.14,1.16 0.82,0 0.5,1.31 -0.5,1.16 -1.48,0.82 -0.16,0.99 2.14,2.79 1.97,1.98 1.65,1.32 0,1.15 -0.33,1.15 -1.65,0.66 0.17,2.14 1.15,0.66 1.81,1.48 0,2.14 -0.99,0.99 -4.77,0.49 -1.32,0.83 0.33,2.79 1.32,1.65 0.66,3.79 0.82,2.47 1.65,2.63 2.79,5.1 5.77,8.24 2.79,2.14 2.8,0.65 1.81,1.16 0.83,-0.17 0.99,-0.82 1.48,0.16 1.81,0.83 1.64,0.49 0.5,2.14 0,2.96 1.31,1.65 0,1.98 z" fill="#f59e0b" stroke="#334155" stroke-width="0.85" stroke-linejoin="round" data-id="VE-Z" data-state="AMAZONAS" data-pct="93.7" data-total="158" data-aprobados="148" data-reprobados="10" onmouseenter="onStateHover(this, event)" onmouseleave="onStateLeave(this)" onclick="onStateClick(this)"><title>AMAZONAS: 93.7% éxito (158 est.)</title></path>
+<path id="VE-ESEQUIBO" class="state-poly esequibo-poly" d="M 600.6 190.5 L 611.8 194.9 L 626.4 202.5 L 642.8 222.9 L 653.8 236.1 L 661.8 249.4 L 660.0 253.8 L 656.0 267.1 L 652.9 273.7 L 654.7 291.4 L 656.0 304.7 L 654.7 326.7 L 653.8 348.8 L 664.9 370.8 L 671.5 388.4 L 668.0 419.2 L 664.9 445.6 L 663.6 467.6 L 658.2 483.0 L 654.7 494.0 L 642.8 487.4 L 634.4 480.8 L 622.9 469.8 L 613.6 463.2 L 605.2 452.2 L 600.3 440.8 L 589.7 413.5 L 581.3 386.7 L 572.0 375.2 L 563.2 359.8 L 560.5 346.6 L 558.3 326.7 L 563.2 309.1 L 569.8 291.4 L 572.0 273.7 L 578.7 258.3 L 587.5 247.2 L 594.1 233.9 L 596.4 220.6 L 598.6 207.3 Z" fill="url(#hatch-esequibo)" stroke="#475569" stroke-width="1.2" stroke-dasharray="4,3" stroke-linejoin="round" data-id="VE-ESEQUIBO" data-state="GUAYANA ESEQUIBA" data-pct="0" data-total="0" data-aprobados="0" data-reprobados="0" onmouseenter="onEsequiboHover(this, event)" onmouseleave="onEsequiboLeave(this)" onclick="onEsequiboClick(this)"><title>Guayana Esequiba (Zona en Reclamación)</title></path>
+              </g>
+              <g id="svg-labels-layer" pointer-events="none">
+                <!-- Rótulo cartográfico oficial de la Guayana Esequiba -->
+                <text x="618" y="335" font-size="9" font-weight="800" fill="#334155" text-anchor="middle" transform="rotate(-35, 618, 335)" letter-spacing="1">GUAYANA ESEQUIBA</text>
+                <text x="622" y="347" font-size="7" font-weight="600" fill="#64748b" text-anchor="middle" transform="rotate(-35, 622, 347)">(Zona en Reclamación)</text>
               </g>
               <g id="svg-pins-layer">
-<g class="nucleo-marker" transform="translate(282.1,93.0)" data-nucleo="SAN PEDRO" data-estado="CARACAS" data-pct="100.0" data-total="37" data-aprobados="37" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>SAN PEDRO (CARACAS): 100.0% éxito (37 est.)</title></g>
-<g class="nucleo-marker" transform="translate(289.1,87.0)" data-nucleo="EL LLANITO" data-estado="CARACAS" data-pct="100.0" data-total="96" data-aprobados="96" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>EL LLANITO (CARACAS): 100.0% éxito (96 est.)</title></g>
-<g class="nucleo-marker" transform="translate(275.1,99.0)" data-nucleo="CARACAS" data-estado="CARACAS" data-pct="96.5" data-total="550" data-aprobados="531" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>CARACAS (CARACAS): 96.5% éxito (550 est.)</title></g>
-<g class="nucleo-marker" transform="translate(289.1,99.0)" data-nucleo="EL JUNQUITO" data-estado="CARACAS" data-pct="100.0" data-total="16" data-aprobados="16" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>EL JUNQUITO (CARACAS): 100.0% éxito (16 est.)</title></g>
-<g class="nucleo-marker" transform="translate(275.1,87.0)" data-nucleo="POLICARACAS" data-estado="CARACAS" data-pct="56.1" data-total="41" data-aprobados="23" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#ef4444" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>POLICARACAS (CARACAS): 56.1% éxito (41 est.)</title></g>
-<g class="nucleo-marker" transform="translate(282.1,84.0)" data-nucleo="POLISUCRE" data-estado="CARACAS" data-pct="100.0" data-total="37" data-aprobados="37" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>POLISUCRE (CARACAS): 100.0% éxito (37 est.)</title></g>
-<g class="nucleo-marker" transform="translate(282.1,102.0)" data-nucleo="CAFETAL" data-estado="CARACAS" data-pct="100.0" data-total="96" data-aprobados="96" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>CAFETAL (CARACAS): 100.0% éxito (96 est.)</title></g>
-<g class="nucleo-marker" transform="translate(180.2,152.9)" data-nucleo="PORTUGUESA" data-estado="PORTUGUESA" data-pct="95.2" data-total="436" data-aprobados="415" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>PORTUGUESA (PORTUGUESA): 95.2% éxito (436 est.)</title></g>
-<g class="nucleo-marker" transform="translate(161.5,112.6)" data-nucleo="PRUEBA LR" data-estado="LARA" data-pct="0.0" data-total="1" data-aprobados="0" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#ef4444" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>PRUEBA LR (LARA): 0.0% éxito (1 est.)</title></g>
-<g class="nucleo-marker" transform="translate(433.5,271.8)" data-nucleo="BOLÍVAR - ANGOSTURA" data-estado="BOLÍVAR" data-pct="97.0" data-total="133" data-aprobados="129" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>BOLÍVAR - ANGOSTURA (BOLÍVAR): 97.0% éxito (133 est.)</title></g>
-<g class="nucleo-marker" transform="translate(440.5,265.8)" data-nucleo="BOLÍVAR - PTO. ORDAZ" data-estado="BOLÍVAR" data-pct="99.8" data-total="437" data-aprobados="436" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>BOLÍVAR - PTO. ORDAZ (BOLÍVAR): 99.8% éxito (437 est.)</title></g>
-<g class="nucleo-marker" transform="translate(311.4,104.1)" data-nucleo="VALLES DEL TUY" data-estado="MIRANDA" data-pct="98.4" data-total="190" data-aprobados="187" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>VALLES DEL TUY (MIRANDA): 98.4% éxito (190 est.)</title></g>
-<g class="nucleo-marker" transform="translate(318.4,98.1)" data-nucleo="GUARENAS - GUATIRE" data-estado="MIRANDA" data-pct="100.0" data-total="134" data-aprobados="134" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>GUARENAS - GUATIRE (MIRANDA): 100.0% éxito (134 est.)</title></g>
-<g class="nucleo-marker" transform="translate(304.4,110.1)" data-nucleo="EJE METROPOLITANO" data-estado="MIRANDA" data-pct="100.0" data-total="50" data-aprobados="50" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>EJE METROPOLITANO (MIRANDA): 100.0% éxito (50 est.)</title></g>
-<g class="nucleo-marker" transform="translate(318.4,110.1)" data-nucleo="BARLOVENTO" data-estado="MIRANDA" data-pct="96.9" data-total="323" data-aprobados="313" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>BARLOVENTO (MIRANDA): 96.9% éxito (323 est.)</title></g>
-<g class="nucleo-marker" transform="translate(304.4,98.1)" data-nucleo="ALTOS MIRANDINOS" data-estado="MIRANDA" data-pct="95.3" data-total="43" data-aprobados="41" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>ALTOS MIRANDINOS (MIRANDA): 95.3% éxito (43 est.)</title></g>
-<g class="nucleo-marker" transform="translate(152.4,196.7)" data-nucleo="BARINAS" data-estado="BARINAS" data-pct="100.0" data-total="277" data-aprobados="277" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>BARINAS (BARINAS): 100.0% éxito (277 est.)</title></g>
-<g class="nucleo-marker" transform="translate(284.3,91.7)" data-nucleo="LA GUAIRA" data-estado="LA GUAIRA" data-pct="98.6" data-total="73" data-aprobados="72" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>LA GUAIRA (LA GUAIRA): 98.6% éxito (73 est.)</title></g>
-<g class="nucleo-marker" transform="translate(413.6,73.4)" data-nucleo="NUEVA ESPARTA" data-estado="NUEVA ESPARTA" data-pct="93.8" data-total="65" data-aprobados="61" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>NUEVA ESPARTA (NUEVA ESPARTA): 93.8% éxito (65 est.)</title></g>
-<g class="nucleo-marker" transform="translate(127.5,136.9)" data-nucleo="TRUJILLO" data-estado="TRUJILLO" data-pct="100.0" data-total="109" data-aprobados="109" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>TRUJILLO (TRUJILLO): 100.0% éxito (109 est.)</title></g>
-<g class="nucleo-marker" transform="translate(456.3,139.0)" data-nucleo="MONAGAS" data-estado="MONAGAS" data-pct="97.9" data-total="281" data-aprobados="275" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>MONAGAS (MONAGAS): 97.9% éxito (281 est.)</title></g>
-<g class="nucleo-marker" transform="translate(397.8,160.0)" data-nucleo="ANZOÁTEGUI" data-estado="ANZOÁTEGUI" data-pct="96.9" data-total="128" data-aprobados="124" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>ANZOÁTEGUI (ANZOÁTEGUI): 96.9% éxito (128 est.)</title></g>
-<g class="nucleo-marker" transform="translate(158.7,65.6)" data-nucleo="FALCÓN" data-estado="FALCÓN" data-pct="93.0" data-total="185" data-aprobados="172" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>FALCÓN (FALCÓN): 93.0% éxito (185 est.)</title></g>
-<g class="nucleo-marker" transform="translate(238.8,108.0)" data-nucleo="CARABOBO" data-estado="CARABOBO" data-pct="91.6" data-total="95" data-aprobados="87" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>CARABOBO (CARABOBO): 91.6% éxito (95 est.)</title></g>
-<g class="nucleo-marker" transform="translate(207.3,103.6)" data-nucleo="YARACUY" data-estado="YARACUY" data-pct="94.4" data-total="18" data-aprobados="17" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>YARACUY (YARACUY): 94.4% éxito (18 est.)</title></g>
-<g class="nucleo-marker" transform="translate(220.9,139.1)" data-nucleo="COJEDES" data-estado="COJEDES" data-pct="100.0" data-total="2" data-aprobados="2" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>COJEDES (COJEDES): 100.0% éxito (2 est.)</title></g>
-<g class="nucleo-marker" transform="translate(182.0,241.2)" data-nucleo="APURE" data-estado="APURE" data-pct="96.1" data-total="76" data-aprobados="73" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>APURE (APURE): 96.1% éxito (76 est.)</title></g>
-<g class="nucleo-marker" transform="translate(446.0,96.4)" data-nucleo="SUCRE - CARÚPANO" data-estado="SUCRE" data-pct="95.1" data-total="466" data-aprobados="443" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>SUCRE - CARÚPANO (SUCRE): 95.1% éxito (466 est.)</title></g>
-<g class="nucleo-marker" transform="translate(453.0,90.4)" data-nucleo="SUCRE - CUMANÁ" data-estado="SUCRE" data-pct="98.7" data-total="677" data-aprobados="668" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>SUCRE - CUMANÁ (SUCRE): 98.7% éxito (677 est.)</title></g>
-<g class="nucleo-marker" transform="translate(95.5,176.1)" data-nucleo="MÉRIDA" data-estado="MÉRIDA" data-pct="96.6" data-total="442" data-aprobados="427" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>MÉRIDA (MÉRIDA): 96.6% éxito (442 est.)</title></g>
-<g class="nucleo-marker" transform="translate(329.7,395.0)" data-nucleo="AMAZONAS" data-estado="AMAZONAS" data-pct="93.7" data-total="158" data-aprobados="148" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>AMAZONAS (AMAZONAS): 93.7% éxito (158 est.)</title></g>
-<g class="nucleo-marker" transform="translate(65.1,205.1)" data-nucleo="TÁCHIRA" data-estado="TÁCHIRA" data-pct="100.0" data-total="52" data-aprobados="52" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>TÁCHIRA (TÁCHIRA): 100.0% éxito (52 est.)</title></g>
-<g class="nucleo-marker" transform="translate(78.3,114.6)" data-nucleo="ZULIA" data-estado="ZULIA" data-pct="99.3" data-total="302" data-aprobados="300" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>ZULIA (ZULIA): 99.3% éxito (302 est.)</title></g>
-<g class="nucleo-marker" transform="translate(537.3,166.1)" data-nucleo="DELTA AMACURO" data-estado="DELTA AMACURO" data-pct="95.5" data-total="44" data-aprobados="42" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>DELTA AMACURO (DELTA AMACURO): 95.5% éxito (44 est.)</title></g>
+<g class="nucleo-marker" id="pin-CARACAS-SAN-PEDRO" transform="translate(282.1,93.0)" data-nucleo="SAN PEDRO" data-estado="CARACAS" data-pct="100.0" data-total="37" data-aprobados="37" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>SAN PEDRO (CARACAS): 100.0% éxito (37 est.)</title></g>
+<g class="nucleo-marker" id="pin-CARACAS-EL-LLANITO" transform="translate(289.1,87.0)" data-nucleo="EL LLANITO" data-estado="CARACAS" data-pct="100.0" data-total="96" data-aprobados="96" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>EL LLANITO (CARACAS): 100.0% éxito (96 est.)</title></g>
+<g class="nucleo-marker" id="pin-CARACAS-CARACAS" transform="translate(275.1,99.0)" data-nucleo="CARACAS" data-estado="CARACAS" data-pct="96.5" data-total="550" data-aprobados="531" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>CARACAS (CARACAS): 96.5% éxito (550 est.)</title></g>
+<g class="nucleo-marker" id="pin-CARACAS-EL-JUNQUITO" transform="translate(289.1,99.0)" data-nucleo="EL JUNQUITO" data-estado="CARACAS" data-pct="100.0" data-total="16" data-aprobados="16" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>EL JUNQUITO (CARACAS): 100.0% éxito (16 est.)</title></g>
+<g class="nucleo-marker" id="pin-CARACAS-POLICARACAS" transform="translate(275.1,87.0)" data-nucleo="POLICARACAS" data-estado="CARACAS" data-pct="56.1" data-total="41" data-aprobados="23" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#ef4444" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>POLICARACAS (CARACAS): 56.1% éxito (41 est.)</title></g>
+<g class="nucleo-marker" id="pin-CARACAS-POLISUCRE" transform="translate(282.1,84.0)" data-nucleo="POLISUCRE" data-estado="CARACAS" data-pct="100.0" data-total="37" data-aprobados="37" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>POLISUCRE (CARACAS): 100.0% éxito (37 est.)</title></g>
+<g class="nucleo-marker" id="pin-CARACAS-CAFETAL" transform="translate(282.1,102.0)" data-nucleo="CAFETAL" data-estado="CARACAS" data-pct="100.0" data-total="96" data-aprobados="96" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>CAFETAL (CARACAS): 100.0% éxito (96 est.)</title></g>
+<g class="nucleo-marker" id="pin-PORTUGUESA-PORTUGUESA" transform="translate(180.2,152.9)" data-nucleo="PORTUGUESA" data-estado="PORTUGUESA" data-pct="95.2" data-total="436" data-aprobados="415" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>PORTUGUESA (PORTUGUESA): 95.2% éxito (436 est.)</title></g>
+<g class="nucleo-marker" id="pin-LARA-PRUEBA-LR" transform="translate(161.5,112.6)" data-nucleo="PRUEBA LR" data-estado="LARA" data-pct="0.0" data-total="1" data-aprobados="0" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#ef4444" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>PRUEBA LR (LARA): 0.0% éxito (1 est.)</title></g>
+<g class="nucleo-marker" id="pin-BOLÍVAR-BOLÍVAR---ANGOSTURA" transform="translate(433.5,271.8)" data-nucleo="BOLÍVAR - ANGOSTURA" data-estado="BOLÍVAR" data-pct="97.0" data-total="133" data-aprobados="129" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>BOLÍVAR - ANGOSTURA (BOLÍVAR): 97.0% éxito (133 est.)</title></g>
+<g class="nucleo-marker" id="pin-BOLÍVAR-BOLÍVAR---PTO.-ORDAZ" transform="translate(440.5,265.8)" data-nucleo="BOLÍVAR - PTO. ORDAZ" data-estado="BOLÍVAR" data-pct="99.8" data-total="437" data-aprobados="436" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>BOLÍVAR - PTO. ORDAZ (BOLÍVAR): 99.8% éxito (437 est.)</title></g>
+<g class="nucleo-marker" id="pin-MIRANDA-VALLES-DEL-TUY" transform="translate(311.4,104.1)" data-nucleo="VALLES DEL TUY" data-estado="MIRANDA" data-pct="98.4" data-total="190" data-aprobados="187" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>VALLES DEL TUY (MIRANDA): 98.4% éxito (190 est.)</title></g>
+<g class="nucleo-marker" id="pin-MIRANDA-GUARENAS---GUATIRE" transform="translate(318.4,98.1)" data-nucleo="GUARENAS - GUATIRE" data-estado="MIRANDA" data-pct="100.0" data-total="134" data-aprobados="134" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>GUARENAS - GUATIRE (MIRANDA): 100.0% éxito (134 est.)</title></g>
+<g class="nucleo-marker" id="pin-MIRANDA-EJE-METROPOLITANO" transform="translate(304.4,110.1)" data-nucleo="EJE METROPOLITANO" data-estado="MIRANDA" data-pct="100.0" data-total="50" data-aprobados="50" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>EJE METROPOLITANO (MIRANDA): 100.0% éxito (50 est.)</title></g>
+<g class="nucleo-marker" id="pin-MIRANDA-BARLOVENTO" transform="translate(318.4,110.1)" data-nucleo="BARLOVENTO" data-estado="MIRANDA" data-pct="96.9" data-total="323" data-aprobados="313" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>BARLOVENTO (MIRANDA): 96.9% éxito (323 est.)</title></g>
+<g class="nucleo-marker" id="pin-MIRANDA-ALTOS-MIRANDINOS" transform="translate(304.4,98.1)" data-nucleo="ALTOS MIRANDINOS" data-estado="MIRANDA" data-pct="95.3" data-total="43" data-aprobados="41" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>ALTOS MIRANDINOS (MIRANDA): 95.3% éxito (43 est.)</title></g>
+<g class="nucleo-marker" id="pin-BARINAS-BARINAS" transform="translate(152.4,196.7)" data-nucleo="BARINAS" data-estado="BARINAS" data-pct="100.0" data-total="277" data-aprobados="277" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>BARINAS (BARINAS): 100.0% éxito (277 est.)</title></g>
+<g class="nucleo-marker" id="pin-LA GUAIRA-LA-GUAIRA" transform="translate(284.3,91.7)" data-nucleo="LA GUAIRA" data-estado="LA GUAIRA" data-pct="98.6" data-total="73" data-aprobados="72" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>LA GUAIRA (LA GUAIRA): 98.6% éxito (73 est.)</title></g>
+<g class="nucleo-marker" id="pin-NUEVA ESPARTA-NUEVA-ESPARTA" transform="translate(413.6,73.4)" data-nucleo="NUEVA ESPARTA" data-estado="NUEVA ESPARTA" data-pct="93.8" data-total="65" data-aprobados="61" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>NUEVA ESPARTA (NUEVA ESPARTA): 93.8% éxito (65 est.)</title></g>
+<g class="nucleo-marker" id="pin-TRUJILLO-TRUJILLO" transform="translate(127.5,136.9)" data-nucleo="TRUJILLO" data-estado="TRUJILLO" data-pct="100.0" data-total="109" data-aprobados="109" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>TRUJILLO (TRUJILLO): 100.0% éxito (109 est.)</title></g>
+<g class="nucleo-marker" id="pin-MONAGAS-MONAGAS" transform="translate(456.3,139.0)" data-nucleo="MONAGAS" data-estado="MONAGAS" data-pct="97.9" data-total="281" data-aprobados="275" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>MONAGAS (MONAGAS): 97.9% éxito (281 est.)</title></g>
+<g class="nucleo-marker" id="pin-ANZOÁTEGUI-ANZOÁTEGUI" transform="translate(397.8,160.0)" data-nucleo="ANZOÁTEGUI" data-estado="ANZOÁTEGUI" data-pct="96.9" data-total="128" data-aprobados="124" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>ANZOÁTEGUI (ANZOÁTEGUI): 96.9% éxito (128 est.)</title></g>
+<g class="nucleo-marker" id="pin-FALCÓN-FALCÓN" transform="translate(158.7,65.6)" data-nucleo="FALCÓN" data-estado="FALCÓN" data-pct="93.0" data-total="185" data-aprobados="172" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>FALCÓN (FALCÓN): 93.0% éxito (185 est.)</title></g>
+<g class="nucleo-marker" id="pin-CARABOBO-CARABOBO" transform="translate(238.8,108.0)" data-nucleo="CARABOBO" data-estado="CARABOBO" data-pct="91.6" data-total="95" data-aprobados="87" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>CARABOBO (CARABOBO): 91.6% éxito (95 est.)</title></g>
+<g class="nucleo-marker" id="pin-YARACUY-YARACUY" transform="translate(207.3,103.6)" data-nucleo="YARACUY" data-estado="YARACUY" data-pct="94.4" data-total="18" data-aprobados="17" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>YARACUY (YARACUY): 94.4% éxito (18 est.)</title></g>
+<g class="nucleo-marker" id="pin-COJEDES-COJEDES" transform="translate(220.9,139.1)" data-nucleo="COJEDES" data-estado="COJEDES" data-pct="100.0" data-total="2" data-aprobados="2" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>COJEDES (COJEDES): 100.0% éxito (2 est.)</title></g>
+<g class="nucleo-marker" id="pin-APURE-APURE" transform="translate(182.0,241.2)" data-nucleo="APURE" data-estado="APURE" data-pct="96.1" data-total="76" data-aprobados="73" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>APURE (APURE): 96.1% éxito (76 est.)</title></g>
+<g class="nucleo-marker" id="pin-SUCRE-SUCRE---CARÚPANO" transform="translate(446.0,96.4)" data-nucleo="SUCRE - CARÚPANO" data-estado="SUCRE" data-pct="95.1" data-total="466" data-aprobados="443" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>SUCRE - CARÚPANO (SUCRE): 95.1% éxito (466 est.)</title></g>
+<g class="nucleo-marker" id="pin-SUCRE-SUCRE---CUMANÁ" transform="translate(453.0,90.4)" data-nucleo="SUCRE - CUMANÁ" data-estado="SUCRE" data-pct="98.7" data-total="677" data-aprobados="668" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>SUCRE - CUMANÁ (SUCRE): 98.7% éxito (677 est.)</title></g>
+<g class="nucleo-marker" id="pin-MÉRIDA-MÉRIDA" transform="translate(95.5,176.1)" data-nucleo="MÉRIDA" data-estado="MÉRIDA" data-pct="96.6" data-total="442" data-aprobados="427" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>MÉRIDA (MÉRIDA): 96.6% éxito (442 est.)</title></g>
+<g class="nucleo-marker" id="pin-AMAZONAS-AMAZONAS" transform="translate(329.7,395.0)" data-nucleo="AMAZONAS" data-estado="AMAZONAS" data-pct="93.7" data-total="158" data-aprobados="148" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>AMAZONAS (AMAZONAS): 93.7% éxito (158 est.)</title></g>
+<g class="nucleo-marker" id="pin-TÁCHIRA-TÁCHIRA" transform="translate(65.1,205.1)" data-nucleo="TÁCHIRA" data-estado="TÁCHIRA" data-pct="100.0" data-total="52" data-aprobados="52" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>TÁCHIRA (TÁCHIRA): 100.0% éxito (52 est.)</title></g>
+<g class="nucleo-marker" id="pin-ZULIA-ZULIA" transform="translate(78.3,114.6)" data-nucleo="ZULIA" data-estado="ZULIA" data-pct="99.3" data-total="302" data-aprobados="300" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#059669" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#059669" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>ZULIA (ZULIA): 99.3% éxito (302 est.)</title></g>
+<g class="nucleo-marker" id="pin-DELTA AMACURO-DELTA-AMACURO" transform="translate(537.3,166.1)" data-nucleo="DELTA AMACURO" data-estado="DELTA AMACURO" data-pct="95.5" data-total="44" data-aprobados="42" onmouseenter="onPinHover(this, event)" onmouseleave="onPinLeave(this)" onclick="onPinClick(this)"><circle r="5" fill="#10b981" stroke="#ffffff" stroke-width="1.8" class="pin-dot"/><circle r="9" fill="none" stroke="#10b981" stroke-width="1.2" opacity="0.6" class="pin-ring"/><title>DELTA AMACURO (DELTA AMACURO): 95.5% éxito (44 est.)</title></g>
               </g>
             </svg>
           </div>
@@ -961,7 +1144,7 @@ header {
             </div>
             <div class="mip-content" id="inspect-content">
               <div style="color:var(--text-subtle);text-align:center;padding:40px 10px;font-size:12.5px;">
-                Haz clic en cualquier polígono de estado o pin de núcleo en el mapa para ver sus estadísticas completas.
+                Haz clic en cualquier polígono de estado, pin de núcleo o en la Guayana Esequiba para ver sus estadísticas completas.
               </div>
             </div>
           </div>
@@ -974,6 +1157,7 @@ header {
           <div class="leg-item"><div class="leg-color" style="background:#f59e0b"></div> 90% – 94.9%</div>
           <div class="leg-item"><div class="leg-color" style="background:#ef4444"></div> &lt; 90% Éxito</div>
           <div class="leg-item"><div class="leg-color" style="background:#e2e8f0"></div> Sin registros</div>
+          <div class="leg-item"><div class="leg-color" style="background:#cbd5e1;border:1px dashed #475569"></div> Guayana Esequiba (Zona en Reclamación)</div>
           <div class="leg-item">
             <svg width="14" height="14" viewBox="0 0 20 20" style="margin-right:2px"><circle cx="10" cy="10" r="5" fill="#2563eb" stroke="#fff" stroke-width="2"/><circle cx="10" cy="10" r="8" fill="none" stroke="#2563eb" stroke-width="1.5"/></svg>
             Núcleo UNES (Pin vectorial)
@@ -1151,9 +1335,11 @@ const NUCLEOS_DATA = [{"x": 453.0, "y": 90.4, "nucleo": "SUCRE - CUMANÁ", "esta
 const TRAYECTO_DATA = [["II", 3230], ["I", 2528], ["III", 182], ["IV", 93], ["Inicial", 37]];
 const STATES_DATA = [{"orig": "SUCRE", "total": 1143, "aprobados": 1111, "nucleos": ["SUCRE - CARÚPANO", "SUCRE - CUMANÁ"], "pct": 97.2}, {"orig": "CARACAS", "total": 873, "aprobados": 836, "nucleos": ["CAFETAL", "CARACAS", "EL JUNQUITO", "EL LLANITO", "POLICARACAS", "POLISUCRE", "SAN PEDRO"], "pct": 95.8}, {"orig": "MIRANDA", "total": 740, "aprobados": 725, "nucleos": ["ALTOS MIRANDINOS", "BARLOVENTO", "EJE METROPOLITANO", "GUARENAS - GUATIRE", "VALLES DEL TUY"], "pct": 98.0}, {"orig": "BOLÍVAR", "total": 570, "aprobados": 565, "nucleos": ["BOLÍVAR - ANGOSTURA", "BOLÍVAR - PTO. ORDAZ"], "pct": 99.1}, {"orig": "MÉRIDA", "total": 442, "aprobados": 427, "nucleos": ["MÉRIDA"], "pct": 96.6}, {"orig": "PORTUGUESA", "total": 436, "aprobados": 415, "nucleos": ["PORTUGUESA"], "pct": 95.2}, {"orig": "ZULIA", "total": 302, "aprobados": 300, "nucleos": ["ZULIA"], "pct": 99.3}, {"orig": "MONAGAS", "total": 281, "aprobados": 275, "nucleos": ["MONAGAS"], "pct": 97.9}, {"orig": "BARINAS", "total": 277, "aprobados": 277, "nucleos": ["BARINAS"], "pct": 100.0}, {"orig": "FALCÓN", "total": 185, "aprobados": 172, "nucleos": ["FALCÓN"], "pct": 93.0}, {"orig": "AMAZONAS", "total": 158, "aprobados": 148, "nucleos": ["AMAZONAS"], "pct": 93.7}, {"orig": "ANZOÁTEGUI", "total": 128, "aprobados": 124, "nucleos": ["ANZOÁTEGUI"], "pct": 96.9}, {"orig": "TRUJILLO", "total": 109, "aprobados": 109, "nucleos": ["TRUJILLO"], "pct": 100.0}, {"orig": "CARABOBO", "total": 95, "aprobados": 87, "nucleos": ["CARABOBO"], "pct": 91.6}, {"orig": "APURE", "total": 76, "aprobados": 73, "nucleos": ["APURE"], "pct": 96.1}, {"orig": "LA GUAIRA", "total": 73, "aprobados": 72, "nucleos": ["LA GUAIRA"], "pct": 98.6}, {"orig": "NUEVA ESPARTA", "total": 65, "aprobados": 61, "nucleos": ["NUEVA ESPARTA"], "pct": 93.8}, {"orig": "TÁCHIRA", "total": 52, "aprobados": 52, "nucleos": ["TÁCHIRA"], "pct": 100.0}, {"orig": "DELTA AMACURO", "total": 44, "aprobados": 42, "nucleos": ["DELTA AMACURO"], "pct": 95.5}, {"orig": "YARACUY", "total": 18, "aprobados": 17, "nucleos": ["YARACUY"], "pct": 94.4}, {"orig": "COJEDES", "total": 2, "aprobados": 2, "nucleos": ["COJEDES"], "pct": 100.0}, {"orig": "LARA", "total": 1, "aprobados": 0, "nucleos": ["PRUEBA LR"], "pct": 0.0}];
 
-// Diccionario para búsquedas rápidas
-const stateDict = {};
-STATES_DATA.forEach(s => stateDict[s.orig.toUpperCase()] = s);
+const NAT_TOTAL = 6070;
+const NAT_APROBADOS = 5890;
+const NAT_REPROBADOS = 180;
+const NAT_PCT = 97.0;
+const NAT_NUCLEOS_COUNT = 34;
 
 // ── UTILIDADES DE FORMATO Y COLOR ───────────────────────────────────────────
 const fmtNum = n => (n || 0).toLocaleString('es-VE');
@@ -1234,6 +1420,7 @@ function switchMapMetric(mode) {
   document.getElementById('btn-mode-vol').classList.toggle('active', mode === 'vol');
 
   document.querySelectorAll('.state-poly').forEach(el => {
+    if (el.id === 'VE-ESEQUIBO') return;
     const tot = parseInt(el.dataset.total) || 0;
     const p = parseFloat(el.dataset.pct) || 0;
     el.setAttribute('fill', mode === 'pct' ? getChoroplethColor(p, tot) : getVolumeColor(tot));
@@ -1261,7 +1448,6 @@ function onStateClick(el) {
   document.getElementById('inspect-title').textContent = '📍 ' + st;
   document.getElementById('inspect-subtitle').textContent = 'Estado de Venezuela';
   
-  // Buscar núcleos de este estado
   const matchedNucleos = NUCLEOS_DATA.filter(n => n.estado.toUpperCase() === st.toUpperCase());
   
   let html = `
@@ -1279,7 +1465,7 @@ function onStateClick(el) {
   } else {
     matchedNucleos.forEach(n => {
       html += `
-        <div class="mnl-card">
+        <div class="mnl-card" style="cursor:pointer" onclick="selectNucleoDirect('${n.nucleo}')">
           <span class="mnl-name">${n.nucleo}</span>
           <span class="mnl-stats" style="color:${getChoroplethColor(n.pct, n.total)}">${n.pct}% <small style="color:var(--text-subtle);font-weight:400">(${fmtNum(n.total)})</small></span>
         </div>
@@ -1291,6 +1477,31 @@ function onStateClick(el) {
   document.getElementById('inspect-content').innerHTML = html;
 }
 
+/* ── EVENTOS GUAYANA ESEQUIBA ─────────────────────────────────────────────── */
+function onEsequiboHover(el, ev) {
+  showFloatingTooltip('Guayana Esequiba', '<b>Zona en Reclamación</b><br>Territorio Esequibo · 159.500 km²<br>Soberanía venezolana');
+}
+
+function onEsequiboLeave(el) {
+  hideFloatingTooltip();
+}
+
+function onEsequiboClick(el) {
+  document.getElementById('inspect-title').textContent = '📍 Guayana Esequiba';
+  document.getElementById('inspect-subtitle').textContent = 'Zona en Reclamación · Territorio Esequibo';
+  
+  document.getElementById('inspect-content').innerHTML = `
+    <div class="detail-metric-row"><span class="dm-label">Estatus</span><span class="dm-val" style="color:#d97706">En Reclamación</span></div>
+    <div class="detail-metric-row"><span class="dm-label">Superficie</span><span class="dm-val">159.500 km²</span></div>
+    <div class="detail-metric-row"><span class="dm-label">Marco Jurídico</span><span class="dm-val">Acuerdo de Ginebra 1966</span></div>
+    <div class="detail-metric-row"><span class="dm-label">Límite Oriental</span><span class="dm-val">Río Esequibo</span></div>
+    <div style="margin-top:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;font-size:12px;color:var(--text-muted);line-height:1.5">
+      <strong>Soberanía Territorial:</strong> Territorio histórico venezolano sujeto al proceso de controversia territorial conforme al Acuerdo de Ginebra del 17 de febrero de 1966.
+    </div>
+  `;
+}
+
+/* ── EVENTOS PINES DE NÚCLEOS ─────────────────────────────────────────────── */
 function onPinHover(el, ev) {
   const nuc = el.dataset.nucleo;
   const est = el.dataset.estado;
@@ -1305,22 +1516,144 @@ function onPinLeave(el) {
 
 function onPinClick(el) {
   const nuc = el.dataset.nucleo;
-  const est = el.dataset.estado;
-  const tot = parseInt(el.dataset.total) || 0;
-  const ap = parseInt(el.dataset.aprobados) || 0;
-  const p = parseFloat(el.dataset.pct) || 0;
-  const rp = tot - ap;
+  // Sincronizar con el selector del Dashboard
+  document.getElementById('dash-filter-nucleo').value = nuc;
+  onDashboardNucleoChange(nuc);
+}
+
+/* ── FILTRADO POR NÚCLEO EN EL DASHBOARD ──────────────────────────────────── */
+function onDashboardNucleoChange(selectedNucleo) {
+  const resetBtn = document.getElementById('btn-reset-nuc-filter');
+  const badge = document.getElementById('dash-filter-status-badge');
   
-  document.getElementById('inspect-title').textContent = '📌 ' + nuc;
-  document.getElementById('inspect-subtitle').textContent = 'Núcleo UNES · ' + est;
+  // Limpiar clases de selección previas en pines y estados
+  document.querySelectorAll('.nucleo-marker').forEach(m => m.classList.remove('selected-pin'));
+  document.querySelectorAll('.state-poly').forEach(s => s.classList.remove('highlighted-state'));
   
-  document.getElementById('inspect-content').innerHTML = `
-    <div class="detail-metric-row"><span class="dm-label">Estado</span><span class="dm-val">${est}</span></div>
-    <div class="detail-metric-row"><span class="dm-label">Matrícula Evaluada</span><span class="dm-val" style="color:#2563eb">${fmtNum(tot)}</span></div>
-    <div class="detail-metric-row"><span class="dm-label">Aprobados</span><span class="dm-val" style="color:#059669">${fmtNum(ap)}</span></div>
-    <div class="detail-metric-row"><span class="dm-label">Reprobados</span><span class="dm-val" style="color:#dc2626">${fmtNum(rp)}</span></div>
-    <div class="detail-metric-row"><span class="dm-label">Tasa de Aprobación</span><span class="dm-val" style="color:${getChoroplethColor(p, tot)}">${p}%</span></div>
+  if (!selectedNucleo) {
+    // RESTABLECER A NIVEL NACIONAL
+    resetBtn.style.display = 'none';
+    badge.textContent = `Mostrando: Todos los Núcleos (${fmtNum(NAT_TOTAL)} estudiantes)`;
+    
+    document.getElementById('kpi-label-1').textContent = 'Total Matriculados';
+    document.getElementById('kpi-val-1').textContent = fmtNum(NAT_TOTAL);
+    document.getElementById('kpi-sub-1').textContent = 'Estudiantes registrados · 2026';
+    
+    document.getElementById('kpi-label-2').textContent = 'Aprobados';
+    document.getElementById('kpi-val-2').textContent = fmtNum(NAT_APROBADOS);
+    document.getElementById('kpi-sub-2').textContent = `${NAT_PCT}% tasa de aprobación`;
+    
+    document.getElementById('kpi-label-3').textContent = 'Reprobados';
+    document.getElementById('kpi-val-3').textContent = fmtNum(NAT_REPROBADOS);
+    document.getElementById('kpi-sub-3').textContent = `${round(100 - NAT_PCT, 1)}% índice de reprobación`;
+    
+    document.getElementById('kpi-label-4').textContent = 'Centros / Núcleos';
+    document.getElementById('kpi-val-4').textContent = NAT_NUCLEOS_COUNT;
+    document.getElementById('kpi-sub-4').textContent = 'Distribuidos a nivel nacional';
+    
+    document.getElementById('inspect-title').textContent = '📍 Selecciona un Estado';
+    document.getElementById('inspect-subtitle').textContent = 'Haz clic en el mapa para inspeccionar';
+    document.getElementById('inspect-content').innerHTML = `
+      <div style="color:var(--text-subtle);text-align:center;padding:40px 10px;font-size:12.5px;">
+        Haz clic en cualquier polígono de estado, pin de núcleo o en la Guayana Esequiba para ver sus estadísticas completas.
+      </div>
+    `;
+    return;
+  }
+  
+  // FILTRAR POR EL NÚCLEO SELECCIONADO
+  resetBtn.style.display = 'inline-block';
+  
+  const nucData = NUCLEOS_DATA.find(n => n.nucleo === selectedNucleo);
+  if (!nucData) return;
+  
+  badge.textContent = `Núcleo Seleccionado: ${nucData.nucleo} (${nucData.estado})`;
+  
+  const nucTot = nucData.total;
+  const nucApr = nucData.aprobados;
+  const nucRep = nucTot - nucApr;
+  const nucPct = nucData.pct;
+  const nucShare = ((nucTot / NAT_TOTAL) * 100).toFixed(1);
+  
+  // Actualizar 4 KPIs
+  document.getElementById('kpi-label-1').textContent = `Matrícula: ${nucData.nucleo}`;
+  document.getElementById('kpi-val-1').textContent = fmtNum(nucTot);
+  document.getElementById('kpi-sub-1').textContent = `${nucShare}% de la matrícula nacional`;
+  
+  document.getElementById('kpi-label-2').textContent = 'Aprobados Núcleo';
+  document.getElementById('kpi-val-2').textContent = fmtNum(nucApr);
+  document.getElementById('kpi-sub-2').textContent = `${nucPct}% tasa de éxito del núcleo`;
+  
+  document.getElementById('kpi-label-3').textContent = 'Reprobados Núcleo';
+  document.getElementById('kpi-val-3').textContent = fmtNum(nucRep);
+  document.getElementById('kpi-sub-3').textContent = `${(100 - nucPct).toFixed(1)}% reprobación del núcleo`;
+  
+  document.getElementById('kpi-label-4').textContent = 'Estado Perteneciente';
+  document.getElementById('kpi-val-4').textContent = nucData.estado;
+  document.getElementById('kpi-sub-4').textContent = `Centro de formación evaluado`;
+  
+  // Resaltar pin del mapa
+  document.querySelectorAll('.nucleo-marker').forEach(m => {
+    if (m.dataset.nucleo === selectedNucleo) {
+      m.classList.add('selected-pin');
+      m.parentNode.appendChild(m); // traer al frente
+    }
+  });
+  
+  // Resaltar estado en el mapa
+  document.querySelectorAll('.state-poly').forEach(s => {
+    if (s.dataset.state && s.dataset.state.toUpperCase() === nucData.estado.toUpperCase()) {
+      s.classList.add('highlighted-state');
+    }
+  });
+  
+  // Actualizar Panel de Inspección
+  document.getElementById('inspect-title').textContent = '📌 ' + nucData.nucleo;
+  document.getElementById('inspect-subtitle').textContent = 'Núcleo UNES · Estado ' + nucData.estado;
+  
+  // Buscar desglose de estudiantes por PNF en este núcleo
+  const nucEstudiantes = ESTUDIANTES.filter(e => e.nucleo === selectedNucleo);
+  const pnfBreakdown = {};
+  nucEstudiantes.forEach(e => {
+    const p = e.pnf || 'Sin PNF';
+    if (!pnfBreakdown[p]) pnfBreakdown[p] = { total: 0, apr: 0 };
+    pnfBreakdown[p].total += 1;
+    if (e.estatus === 'Aprobado') pnfBreakdown[p].apr += 1;
+  });
+  
+  let html = `
+    <div class="detail-metric-row"><span class="dm-label">Estado</span><span class="dm-val">${nucData.estado}</span></div>
+    <div class="detail-metric-row"><span class="dm-label">Matrícula Evaluada</span><span class="dm-val" style="color:#2563eb">${fmtNum(nucTot)}</span></div>
+    <div class="detail-metric-row"><span class="dm-label">Aprobados</span><span class="dm-val" style="color:#059669">${fmtNum(nucApr)}</span></div>
+    <div class="detail-metric-row"><span class="dm-label">Reprobados</span><span class="dm-val" style="color:#dc2626">${fmtNum(nucRep)}</span></div>
+    <div class="detail-metric-row"><span class="dm-label">Tasa de Aprobación</span><span class="dm-val" style="color:${getChoroplethColor(nucPct, nucTot)}">${nucPct}%</span></div>
+    
+    <div class="mip-nucleos-list">
+      <div class="mnl-title">Programas (PNF) en este Núcleo (${Object.keys(pnfBreakdown).length})</div>
   `;
+  
+  for (const [pnfName, stats] of Object.entries(pnfBreakdown)) {
+    const pct = ((stats.apr / stats.total) * 100).toFixed(1);
+    html += `
+      <div class="mnl-card">
+        <span class="mnl-name">${pnfName}</span>
+        <span class="mnl-stats">${pct}% <small style="color:var(--text-subtle);font-weight:400">(${fmtNum(stats.total)})</small></span>
+      </div>
+    `;
+  }
+  
+  html += `</div>`;
+  document.getElementById('inspect-content').innerHTML = html;
+}
+
+function resetDashboardNucleoFilter() {
+  document.getElementById('dash-filter-nucleo').value = '';
+  onDashboardNucleoChange('');
+}
+
+function selectNucleoDirect(nucleoName) {
+  document.getElementById('dash-filter-nucleo').value = nucleoName;
+  onDashboardNucleoChange(nucleoName);
 }
 
 // ── VISTA DE REPORTES (PNF Y NÚCLEOS) ────────────────────────────────────────
@@ -1435,7 +1768,6 @@ function renderReportNucleos(list) {
 function initNucleos() {
   nucleosInitialized = true;
   
-  // Llenar select de estados
   const stateSet = [...new Set(NUCLEOS_DATA.map(n => n.estado))].sort();
   const sel = document.getElementById('nuc-estado-filter');
   stateSet.forEach(s => sel.appendChild(new Option(s, s)));
@@ -1462,7 +1794,7 @@ function renderNucleosCards(list) {
   }
   
   container.innerHTML = list.map(n => `
-    <div class="nuc-tile">
+    <div class="nuc-tile" style="cursor:pointer" onclick="navigate('dashboard');selectNucleoDirect('${n.nucleo}')">
       <div class="nt-head">
         <div>
           <div class="nt-title">${n.nucleo}</div>
@@ -1490,12 +1822,10 @@ let estFilteredList = ESTUDIANTES;
 function initEstudiantes() {
   estudiantesInitialized = true;
   
-  // Llenar select PNF
   const pnfList = [...new Set(ESTUDIANTES.map(e => e.pnf))].sort();
   const selPnf = document.getElementById('est-filter-pnf');
   pnfList.forEach(p => selPnf.appendChild(new Option(p, p)));
   
-  // Llenar select Núcleos
   const nucList = [...new Set(ESTUDIANTES.map(e => e.nucleo))].sort();
   const selNuc = document.getElementById('est-filter-nuc');
   nucList.forEach(n => selNuc.appendChild(new Option(n, n)));
